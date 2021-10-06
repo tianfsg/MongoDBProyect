@@ -23,27 +23,31 @@ class ModelCursor:
     modelo.
     """
 
-    def __init__(self, model_class, command_cursor):
+    def __init__(self, model_class, command_cursor):        #TODO ¿ES NECESARIO TENER EL PARAMETRO MODEL_CLASS SI FIND PIDE DE VUELTA UN CURSOR Y NEXT DEVUELVE UN MODELO??
         """ Inicializa ModelCursor
         Argumentos:
             model_class (class) -- Clase para crear los modelos del 
             documento que se itera.
             command_cursor (CommandCursor) -- Cursor de pymongo
         """
-        #TODO
+        self.modelClass = model_class
+        self.command_cursor = command_cursor
         pass #No olvidar eliminar esta linea una vez implementado
     
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
         """
-        #TODO
+        if ModelCursor.alive():
+            self.command_cursor = self.command_cursor.next()
+            return self.model_class(self.command_cursor)                 #TODO ¿COMO DIFERENCIAMOS LOS MODELOS?
+
         pass #No olvidar eliminar esta linea una vez implementado
 
     @property
     def alive(self):
         """True si existen más modelos por devolver, False en caso contrario
         """
-        #TODO
+        return self.command_cursor.hasNext()
         pass #No olvidar eliminar esta linea una vez implementado
 
 class Persona:
@@ -59,35 +63,45 @@ class Persona:
 
     def __init__(self, **kwargs):
         #TODO MEMORIA PRINCIPAL
+        self.__dict__.update(**kwargs)
         pass #No olvidar eliminar esta linea una vez implementado
 
 
     def save(self):
         #TODO
+        #Comprueba si existe con _id
+            #Comprobar requierd vars
+            #si se da:
+                #Si existe: llamar al set con updateOne
+                #Si no existe: Crearlo con el insert desde save
+            #si no se da
+                #nada
         pass #No olvidar eliminar esta linea una vez implementado
 
     def set(self, **kwargs):
         #TODO  EL UPDATE/CHANGE  - MEMORIA PRINCIPAL
+        
         pass #No olvidar eliminar esta linea una vez implementado
     
     @classmethod
-    def find(cls, filter):
+    def find(cls, filter): #FILTER ES LA QUERIE
         """ Devuelve un cursor de modelos        
         """ 
         #TODO EL QUERY.
         #comprobar cuando se ha modificado la informacion. 
         # cls es el puntero a la clase
-        pass #No olvidar eliminar esta linea una vez implementado
+        cursorPersona = ModelCursor(Persona, self.db.personas.find())#Se da por hecho que personas es una coleccio
+        return #model cursor
 
     @classmethod
-    def init_class(cls, db, vars_path="model_name.vars"):
+    def init_class(cls, db, vars_path="model_name.vars"):                   #TODO ¿QUE FORMATO DEBE DE TENER El TXT Y COMO SE LEE?
         """ Inicializa las variables de clase en la inicializacion del sistema.
         Argumentos:
             db (MongoClient) -- Conexion a la base de datos.
             vars_path (str) -- ruta al archivo con la definicion de variables
             del modelo.
         """
-        #TODO
+        self.db = db['MongoDbProyect']
         # cls es el puntero a la clase
         pass #No olvidar eliminar esta linea una vez implementado
 
@@ -99,6 +113,7 @@ Q1 = []
 # Q2: etc...
 
 if __name__ == '__main__':
-    #TODO
+    client = MongoClient('localhost', 27017)
+    Persona.init_class(client['MongDBProyect']['personas'], "personas.txt")
     pass #No olvidar eliminar esta linea una vez implementado
 
