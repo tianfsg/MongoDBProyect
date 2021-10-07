@@ -68,8 +68,35 @@ class Persona:
                 #Si existe: llamar al set con updateOne
                 #Si no existe: Crearlo con el insert desde save
             #si no se da
-                #nada
-        pass #No olvidar eliminar esta linea una vez implementado
+            #nada
+
+        #Comprobador de la posesion de las required_vars
+
+        lista = list(self.__dict__.keys())
+        cont = 0
+
+        for i in range(0, len(self.required_vars), 1): 
+            for x in range(0, len(self.__dict__), 1):
+                if self.required_vars[i] == lista[x]:
+                    cont += 1
+                    break
+
+        if cont == len(self.required_vars):
+            #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
+            all_vars = self.required_vars + self.admissible_vars
+            for i in range(0, len(self.__dict__), 1):
+                var_flag = False
+                for x in range(0, len(all_vars), 1):
+                    if all_vars[x] == lista[i]:
+                        var_flag = True         #Si esta dentro de las variables true
+                        break
+                if var_flag == False:           #Si no esta dentro de las variables se borra
+                    del self.__dict__[lista[i]]
+            
+
+
+
+
 
     def set(self, **kwargs):
         #TODO
@@ -84,7 +111,7 @@ class Persona:
         pass #No olvidar eliminar esta linea una vez implementado
 
     @classmethod
-    def init_class(cls, db, vars_path="model_name.vars"):
+    def init_class(cls, db, vars_path="model_vars.txt"):
         """ Inicializa las variables de clase en la inicializacion del sistema.
         Argumentos:
             db (MongoClient) -- Conexion a la base de datos.
@@ -111,4 +138,11 @@ Q1 = []
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
-    Persona.init_class(client['MongDBProyect'], "personas.txt")
+    Persona.init_class(client['MongDBProyect'])
+
+    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'carpeta': 'roja', 'nif': 'x3610444l'}
+    p1 = Persona(**x)
+    p1.save()
+   
+
+
