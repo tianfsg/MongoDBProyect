@@ -30,21 +30,21 @@ class ModelCursor:
             documento que se itera.
             command_cursor (CommandCursor) -- Cursor de pymongo
         """
-        #TODO
-        pass #No olvidar eliminar esta linea una vez implementado
+        self.modelClass = model_class
+        self.command_cursor = command_cursor
     
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
         """
-        #TODO
-        pass #No olvidar eliminar esta linea una vez implementado
+        if ModelCursor.alive():
+            self.command_cursor = self.command_cursor.next()
+            return self.model_class(self.command_cursor[0])
 
     @property
     def alive(self):
         """True si existen más modelos por devolver, False en caso contrario
         """
-        #TODO
-        pass #No olvidar eliminar esta linea una vez implementado
+        return self.command_cursor.hasNext()
 
 class Persona:
     """ Prototipo de la clase modelo
@@ -62,7 +62,13 @@ class Persona:
 
 
     def save(self):
-        #TODO
+        #Comprueba si existe con _id
+            #Comprobar requierd vars
+            #si se da:
+                #Si existe: llamar al set con updateOne
+                #Si no existe: Crearlo con el insert desde save
+            #si no se da
+                #nada
         pass #No olvidar eliminar esta linea una vez implementado
 
     def set(self, **kwargs):
@@ -74,7 +80,7 @@ class Persona:
         """ Devuelve un cursor de modelos        
         """ 
         #TODO
-        # cls es el puntero a la clase
+        cursorPersona = ModelCursor(Persona, self.db.personas.find())#Se da por hecho que personas es una coleccio
         pass #No olvidar eliminar esta linea una vez implementado
 
     @classmethod
@@ -94,7 +100,7 @@ class Persona:
 
         Persona.required_vars = required_vars
         Persona.admissible_vars = admissible_vars
-        Persona.db = db
+        Persona.db = db['MongoDbProyect']
 
 
 # Q1: Listado de todas las compras de un cliente
@@ -104,6 +110,5 @@ Q1 = []
 # Q2: etc...
 
 if __name__ == '__main__':
-    #TODO
-    pass #No olvidar eliminar esta linea una vez implementado
-
+    client = MongoClient('localhost', 27017)
+    Persona.init_class(client['MongDBProyect'], "personas.txt")
