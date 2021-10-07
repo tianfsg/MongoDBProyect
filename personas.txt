@@ -1,2 +1,0 @@
-requiered_vars = ("nombre", "apellido", "nif")
-admisible_vars = ("edad", "telefono", "genero", "centro_educativo", "empresa")

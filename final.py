@@ -111,7 +111,7 @@ class Persona:
         pass #No olvidar eliminar esta linea una vez implementado
 
     @classmethod
-    def init_class(cls, db, vars_path="model_vars.txt"):
+    def init_class(cls, db, vars_path="model_name.vars"):
         """ Inicializa las variables de clase en la inicializacion del sistema.
         Argumentos:
             db (MongoClient) -- Conexion a la base de datos.
@@ -138,7 +138,7 @@ Q1 = []
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
-    Persona.init_class(client['MongDBProyect'])
+    Persona.init_class(client['MongDBProyect'], vars_path="personas_vars.txt")
 
     x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'carpeta': 'roja', 'nif': 'x3610444l'}
     p1 = Persona(**x)
