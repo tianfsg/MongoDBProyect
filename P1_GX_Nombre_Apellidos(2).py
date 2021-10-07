@@ -39,8 +39,7 @@ class ModelCursor:
         """
         if ModelCursor.alive():
             self.command_cursor = self.command_cursor.next()
-            return self.model_class(self.command_cursor[0])                 #TODO ¿COMO DIFERENCIAMOS LOS MODELOS?
-
+            return self.model_class(self.command_cursor[0])
         pass #No olvidar eliminar esta linea una vez implementado
 
     @property
@@ -114,6 +113,6 @@ Q1 = []
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
-    Persona.init_class(client['MongDBProyect']['personas'], "personas.txt")
+    Persona.init_class(client['MongDBProyect'], "personas.txt")
     pass #No olvidar eliminar esta linea una vez implementado
 
