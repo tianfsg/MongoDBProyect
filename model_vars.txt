@@ -1,0 +1,2 @@
+_id, nombre, apellido, nif
+edad, centro, teléfono

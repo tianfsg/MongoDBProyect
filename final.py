@@ -62,14 +62,33 @@ class Persona:
 
 
     def save(self):
+
         #Comprueba si existe con _id
             #Comprobar requierd vars
             #si se da:
                 #Si existe: llamar al set con updateOne
                 #Si no existe: Crearlo con el insert desde save
             #si no se da
-                #nada
-        pass #No olvidar eliminar esta linea una vez implementado
+            #nada
+        lista = list(self.__dict__.keys())
+        cont = 0
+
+        for i in range(0, len(self.required_vars), 1):
+
+            print('requerida: ', self.required_vars[i])
+            
+            for x in range(0, len(self.__dict__), 1):
+            
+                print('dicc: ', lista[x])
+            
+                if self.required_vars[i] == lista[x]:
+                    cont += 1
+                    i += 1
+                    break
+
+        print('contador: ', cont)
+
+
 
     def set(self, **kwargs):
         #TODO
@@ -84,7 +103,7 @@ class Persona:
         pass #No olvidar eliminar esta linea una vez implementado
 
     @classmethod
-    def init_class(cls, db, vars_path="model_name.vars"):
+    def init_class(cls, db, vars_path="model_vars.txt"):
         """ Inicializa las variables de clase en la inicializacion del sistema.
         Argumentos:
             db (MongoClient) -- Conexion a la base de datos.
@@ -111,4 +130,11 @@ Q1 = []
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
-    Persona.init_class(client['MongDBProyect'], "personas.txt")
+    Persona.init_class(client['MongDBProyect'])
+
+    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293}
+    p1 = Persona(**x)
+    p1.save()
+   
+
+
