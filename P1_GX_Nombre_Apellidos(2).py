@@ -39,7 +39,7 @@ class ModelCursor:
         """
         if ModelCursor.alive():
             self.command_cursor = self.command_cursor.next()
-            return self.model_class(self.command_cursor)                 #TODO ¿COMO DIFERENCIAMOS LOS MODELOS?
+            return self.model_class(self.command_cursor[0])                 #TODO ¿COMO DIFERENCIAMOS LOS MODELOS?
 
         pass #No olvidar eliminar esta linea una vez implementado
 
