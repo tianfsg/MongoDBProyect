@@ -62,6 +62,7 @@ class Persona:
 
 
     def save(self):
+
         #Comprueba si existe con _id
             #Comprobar requierd vars
             #si se da:
@@ -80,10 +81,10 @@ class Persona:
                     cont += 1
                     break
                     
+
         if cont == len(self.required_vars):
             #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
             all_vars = self.required_vars + self.admissible_vars
-            print(all_vars)
             for i in range(0, len(self.__dict__), 1):
                 var_flag = False
                 for x in range(0, len(all_vars), 1):
@@ -93,8 +94,8 @@ class Persona:
                 if var_flag == False:           #Si no esta dentro de las variables se borra
                     print("La key: *" + lista[i] + "* NO ES VALIDA")
                     break
-
             
+
     def set(self, **kwargs):
         #TODO
         pass #No olvidar eliminar esta linea una vez implementado
