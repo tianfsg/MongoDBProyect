@@ -62,7 +62,6 @@ class Persona:
 
 
     def save(self):
-
         #Comprueba si existe con _id
             #Comprobar requierd vars
             #si se da:
@@ -70,32 +69,32 @@ class Persona:
                 #Si no existe: Crearlo con el insert desde save
             #si no se da
             #nada
+        #Comprobador de la posesion de las required_vars
+
         lista = list(self.__dict__.keys())
         cont = 0
 
-        print(len(self.required_vars))
-        print(len(self.__dict__))
-
-        for i in range(0, len(self.required_vars), 1):
-
-            print('i:',i,'-requerida: ', self.required_vars[i])
-        
-            for x in range(i, len(self.__dict__), 1):
-            
-                print('x:', x, '-dicc:   ', lista[x])
-                if lista[x] != self.required_vars[i]:
-                    print(self.required_vars[i],' ',lista[x],' ',lista[x] == self.required_vars[i])
-                    i+=1
-                else:
-                    print(self.required_vars[i],' ',lista[x],' ',lista[x] == self.required_vars[i])
-                    cont+=1
+        for i in range(0, len(self.required_vars), 1): 
+            for x in range(0, len(self.__dict__), 1):
+                if self.required_vars[i] == lista[x]:
+                    cont += 1
                     break
                     
+        if cont == len(self.required_vars):
+            #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
+            all_vars = self.required_vars + self.admissible_vars
+            print(all_vars)
+            for i in range(0, len(self.__dict__), 1):
+                var_flag = False
+                for x in range(0, len(all_vars), 1):
+                    if all_vars[x] == lista[i]:
+                        var_flag = True         #Si esta dentro de las variables true
+                        break
+                if var_flag == False:           #Si no esta dentro de las variables se borra
+                    print("La key: *" + lista[i] + "* NO ES VALIDA")
+                    break
 
-        print('contador: ', cont)
-
-
-
+            
     def set(self, **kwargs):
         #TODO
         pass #No olvidar eliminar esta linea una vez implementado
@@ -105,7 +104,7 @@ class Persona:
         """ Devuelve un cursor de modelos        
         """ 
         #TODO
-        cursorPersona = ModelCursor(Persona, self.db.personas.find())#Se da por hecho que personas es una coleccio
+        cursorPersona = ModelCursor(Persona, Persona.db.personas.find())#Se da por hecho que personas es una coleccio
         pass #No olvidar eliminar esta linea una vez implementado
 
     @classmethod
@@ -138,8 +137,7 @@ if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     Persona.init_class(client['MongDBProyect'])
 
-    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293}
-    
+    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'carpeta': 'roja', 'nif': 'x3610444l'}
     p1 = Persona(**x)
     p1.save()
    
