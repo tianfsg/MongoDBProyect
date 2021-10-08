@@ -92,7 +92,8 @@ class Persona:
                         var_flag = True         #Si esta dentro de las variables true
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
-                    del self.__dict__[lista[i]]
+                    print("La key: *" + lista[i] + "* NO ES VALIDA")
+                    break
             
 
 
