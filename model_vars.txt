@@ -1,2 +1,2 @@
-_id, nombre, apellido, nif
-edad, centro, teléfono
+_id,nombre,apellido,nif
+edad,centro,teléfono

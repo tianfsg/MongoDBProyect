@@ -73,18 +73,24 @@ class Persona:
         lista = list(self.__dict__.keys())
         cont = 0
 
+        print(len(self.required_vars))
+        print(len(self.__dict__))
+
         for i in range(0, len(self.required_vars), 1):
 
-            print('requerida: ', self.required_vars[i])
+            print('i:',i,'-requerida: ', self.required_vars[i])
+        
+            for x in range(i, len(self.__dict__), 1):
             
-            for x in range(0, len(self.__dict__), 1):
-            
-                print('dicc: ', lista[x])
-            
-                if self.required_vars[i] == lista[x]:
-                    cont += 1
-                    i += 1
+                print('x:', x, '-dicc:   ', lista[x])
+                if lista[x] != self.required_vars[i]:
+                    print(self.required_vars[i],' ',lista[x],' ',lista[x] == self.required_vars[i])
+                    i+=1
+                else:
+                    print(self.required_vars[i],' ',lista[x],' ',lista[x] == self.required_vars[i])
+                    cont+=1
                     break
+                    
 
         print('contador: ', cont)
 
@@ -133,6 +139,7 @@ if __name__ == '__main__':
     Persona.init_class(client['MongDBProyect'])
 
     x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293}
+    
     p1 = Persona(**x)
     p1.save()
    
