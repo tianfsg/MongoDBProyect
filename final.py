@@ -98,10 +98,11 @@ class Persona:
         try:
             if valido == True: #True: entonces contiene requeridas y admisibles.
                 #comprobar si existe en la bd.
-                if list(Persona.find({'_id': self.__dict__['_id']}).command_cursor): #Significa que existe
+                if Persona.find({'_id': self.__dict__['_id']}): #Significa que existe
                     print('ya existe')
                 else: #Significa que no existe
-                    print('no existe')
+                    Persona.db.persona.insert_one(self.__dict__)
+                    print('exitoso')
             else:
                 print('invalido')
         except:
@@ -119,19 +120,23 @@ class Persona:
         return ModelCursor(Persona, Persona.db.persona.find(filter))
 
     @classmethod
-    def init_class(cls, db, vars_path="personas_vars.txt"):
+    def init_class(cls, db, vars_path="persona_vars.txt"):
         """ Inicializa las variables de clase en la inicializacion del sistema.
         Argumentos:
             db (MongoClient) -- Conexion a la base de datos.
             vars_path (str) -- ruta al archivo con la definicion de variables
             del modelo.
         """
-        file = open(vars_path, 'r')
-        content_file = file.read()
-        nothing = content_file.split('\n')
-        required_vars = nothing[0].split(',')
-        admissible_vars = nothing[1].split(',')
-        file.close()
+
+        try:
+            file = open(vars_path, 'r')
+            content_file = file.read()
+            nothing = content_file.split('\n')
+            required_vars = nothing[0].split(',')
+            admissible_vars = nothing[1].split(',')
+            file.close()
+        except:
+            print('el fichero de vars no existe')
 
         Persona.required_vars = required_vars
         Persona.admissible_vars = admissible_vars
@@ -146,12 +151,19 @@ Q1 = []
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
-    #Persona.init_class(client['mongoproyect'])
     Persona.init_class(client['mongoproyect'])
+
     x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'x3610444l'}
-    p1 = Persona(**x)
-    p2 = Persona(**{'_id': '2', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293,'nif': 'x5610444l'})
+    e = {'_id': '2', 'nombre': 'Hao', 'apellido': 'Long', 'telefono': 84473466374, 'nif': 'y7502011t'}
+    i = {'_id': '3', 'nombre': 'Javier', 'apellido': 'Algarra', 'telefono': 3453245353, 'nif': 'e47583920'}
+    # cursor = client['mongoproyect'].persona.count_documents({'_id': x['_id']})
+    # print(cursor)
+
+    p1 = Persona(**i)
+    print(p1.find({'_id': p1.__dict__['_id']}).next())
     p1.save()
+
+
     # a = 0
     # while a == 0:
     #     print('Bienvenido al Menu')
@@ -175,10 +187,3 @@ if __name__ == '__main__':
     #     else:
     #         print()
     #         print('introduzca un valor valido\n')
-            
-   
-   
-
-
-
-
