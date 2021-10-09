@@ -69,10 +69,10 @@ class Persona:
                 #Si no existe: Crearlo con el insert desde save
             #si no se da
             #nada
-
         #Comprobador de la posesion de las required_vars
 
         lista = list(self.__dict__.keys())
+        valido = True
         cont = 0
 
         for i in range(0, len(self.required_vars), 1): 
@@ -80,7 +80,7 @@ class Persona:
                 if self.required_vars[i] == lista[x]:
                     cont += 1
                     break
-
+    
         if cont == len(self.required_vars):
             #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
             all_vars = self.required_vars + self.admissible_vars
@@ -91,12 +91,19 @@ class Persona:
                         var_flag = True         #Si esta dentro de las variables true
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
-                    del self.__dict__[lista[i]]
-            
+                    print("La key: *" + lista[i] + "* NO ES VALIDA")
+                    valido = False
+                    break
 
-
-
-
+        try:
+            if valido == True:
+                Persona.db.persona.insert_one(self.__dict__)
+                print('exitoso')
+            else:
+                print('invalido')
+        except:
+            print('Error al guardar el json')
+    
 
     def set(self, **kwargs):
         #TODO
@@ -107,7 +114,7 @@ class Persona:
         """ Devuelve un cursor de modelos        
         """ 
         #TODO
-        cursorPersona = ModelCursor(Persona, self.db.personas.find())#Se da por hecho que personas es una coleccio
+        cursorPersona = ModelCursor(Persona, Persona.db.personas.find())#Se da por hecho que personas es una coleccio
         pass #No olvidar eliminar esta linea una vez implementado
 
     @classmethod
@@ -127,7 +134,7 @@ class Persona:
 
         Persona.required_vars = required_vars
         Persona.admissible_vars = admissible_vars
-        Persona.db = db['MongoDbProyect']
+        Persona.db = db
 
 
 # Q1: Listado de todas las compras de un cliente
@@ -138,11 +145,39 @@ Q1 = []
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
-    Persona.init_class(client['MongDBProyect'], vars_path="personas_vars.txt")
+    Persona.init_class(client['mongoproyect'])
 
     x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'carpeta': 'roja', 'nif': 'x3610444l'}
     p1 = Persona(**x)
     p1.save()
    
+    # a = 0
+    # while a == 0:
+    #     print('Bienvenido al Menu')
+    #     print('Que desea introducir: ')
+    #     print('1. Persona')
+    #     print('2. Centro')
+    #     print('3. Empresa')
+    #     print()
+    #     print('4. Salir')
+
+    #     opc = input()
+
+    #     if opc == '1':
+    #         pass
+    #     elif opc == '2':
+    #         pass
+    #     elif opc == '3':
+    #         pass
+    #     elif opc == '4':
+    #         exit
+    #     else:
+    #         print()
+    #         print('introduzca un valor valido\n')
+            
+   
+   
+
+
 
 
