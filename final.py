@@ -35,10 +35,10 @@ class ModelCursor:
     
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
-        """
-        if ModelCursor.alive():
+        """ #TODO
+        if ModelCursor.alive:
             self.command_cursor = self.command_cursor.next()
-            return self.model_class(self.command_cursor[0])
+            return self.modelClass(self.command_cursor[0])
 
     @property
     def alive(self):
@@ -115,7 +115,7 @@ class Persona:
         """ 
         #TODO
         cursorPersona = ModelCursor(Persona, Persona.db.personas.find())#Se da por hecho que personas es una coleccio
-        pass #No olvidar eliminar esta linea una vez implementado
+        return cursorPersona
 
     @classmethod
     def init_class(cls, db, vars_path="model_name.vars"):
@@ -150,6 +150,7 @@ if __name__ == '__main__':
     x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'carpeta': 'roja', 'nif': 'x3610444l'}
     p1 = Persona(**x)
     p1.save()
+    listaPrimero = list(p1.find({'_id': '1'}).command_cursor)
    
     # a = 0
     # while a == 0:
