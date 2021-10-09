@@ -119,19 +119,23 @@ class Persona:
         pass #No olvidar eliminar esta linea una vez implementado
 
     @classmethod
-    def init_class(cls, db, vars_path="model_vars.txt"):
+    def init_class(cls, db, vars_path="persona_vars.txt"):
         """ Inicializa las variables de clase en la inicializacion del sistema.
         Argumentos:
             db (MongoClient) -- Conexion a la base de datos.
             vars_path (str) -- ruta al archivo con la definicion de variables
             del modelo.
         """
-        file = open(vars_path, 'r')
-        content_file = file.read()
-        nothing = content_file.split('\n')
-        required_vars = nothing[0].split(',')
-        admissible_vars = nothing[1].split(',')
-        file.close()
+
+        try:
+            file = open(vars_path, 'r')
+            content_file = file.read()
+            nothing = content_file.split('\n')
+            required_vars = nothing[0].split(',')
+            admissible_vars = nothing[1].split(',')
+            file.close()
+        except:
+            print('el fichero de vars no existe')
 
         Persona.required_vars = required_vars
         Persona.admissible_vars = admissible_vars
@@ -175,10 +179,3 @@ if __name__ == '__main__':
     #     else:
     #         print()
     #         print('introduzca un valor valido\n')
-            
-   
-   
-
-
-
-
