@@ -30,22 +30,22 @@ class ModelCursor:
             documento que se itera.
             command_cursor (CommandCursor) -- Cursor de pymongo
         """
-        self.model_class = model_class
+        self.modelClass = model_class
         self.command_cursor = command_cursor
 
     
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
-        """
+        """ #TODO
         if ModelCursor.alive:
             self.command_cursor = self.command_cursor.next()
-            return self.model_class(self.command_cursor[0])
+            return self.modelClass(list(self.command_cursor)[0])
 
     @property
     def alive(self):
         """True si existen más modelos por devolver, False en caso contrario
         """
-        return ModelCursor.command_cursor.hasNext()
+        return self.command_cursor.hasNext()
 
 class Persona:
     """ Prototipo de la clase modelo
@@ -62,7 +62,6 @@ class Persona:
         self.__dict__.update(kwargs)
 
     def save(self):
-
         #Comprueba si existe con _id
             #Comprobar requierd vars
             #si se da:
@@ -120,8 +119,7 @@ class Persona:
     def find(cls, filter):
         """ Devuelve un cursor de modelos        
         """ 
-        cursorPersona = ModelCursor(Persona, Persona.db.persona.find(filter))    #Se da por hecho que personas es una coleccion
-        return cursorPersona
+        return ModelCursor(Persona, Persona.db.persona.find(filter))
 
     @classmethod
     def init_class(cls, db, vars_path="persona_vars.txt"):
@@ -157,9 +155,8 @@ if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     Persona.init_class(client['mongoproyect'])
 
-    #X, E dentro de mongo
-    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'y7502011t'}
-    e = {'_id': '2', 'nombre': 'Hao', 'apellido': 'Long', 'telefono': 84473466374, 'nif': 'x3610444l'}
+    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'x3610444l'}
+    e = {'_id': '2', 'nombre': 'Hao', 'apellido': 'Long', 'telefono': 84473466374, 'nif': 'y7502011t'}
     i = {'_id': '3', 'nombre': 'Javier', 'apellido': 'Algarra', 'telefono': 3453245353, 'nif': 'e47583920'}
 
     # cursor = client['mongoproyect'].persona.count_documents({'_id': x['_id']})
