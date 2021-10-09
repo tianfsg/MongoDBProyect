@@ -30,13 +30,13 @@ class ModelCursor:
             documento que se itera.
             command_cursor (CommandCursor) -- Cursor de pymongo
         """
-        self.modelClass = model_class
+        self.model_class = model_class
         self.command_cursor = command_cursor
     
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
         """
-        if ModelCursor.alive():
+        if ModelCursor.alive:
             self.command_cursor = self.command_cursor.next()
             return self.model_class(self.command_cursor[0])
 
@@ -44,7 +44,7 @@ class ModelCursor:
     def alive(self):
         """True si existen más modelos por devolver, False en caso contrario
         """
-        return self.command_cursor.hasNext()
+        return ModelCursor.command_cursor.hasNext()
 
 class Persona:
     """ Prototipo de la clase modelo
@@ -59,7 +59,6 @@ class Persona:
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-
 
     def save(self):
 
@@ -97,13 +96,17 @@ class Persona:
                     break
 
         try:
-            if valido == True:
-                Persona.db.persona.insert_one(self.__dict__)
-                print('exitoso')
+            if valido == True: #True: entonces contiene requeridas y admisibles.
+                #comprobar si existe en la bd.
+                if Persona.find({'_id': self.__dict__['_id']}): #Significa que existe
+                    print('ya existe')
+                else: #Significa que no existe
+                    Persona.db.persona.insert_one(self.__dict__)
+                    print('exitoso')
             else:
                 print('invalido')
         except:
-            print('Error al guardar el json')
+            print('Algo fallo en Persona.save()')
     
 
     def set(self, **kwargs):
@@ -115,8 +118,9 @@ class Persona:
         """ Devuelve un cursor de modelos        
         """ 
         #TODO
-        cursorPersona = ModelCursor(Persona, Persona.db.personas.find())#Se da por hecho que personas es una coleccio
-        pass #No olvidar eliminar esta linea una vez implementado
+        cursorPersona = ModelCursor(Persona, Persona.db.personas.find(filter))#Se da por hecho que personas es una coleccion
+        return cursorPersona
+
 
     @classmethod
     def init_class(cls, db, vars_path="persona_vars.txt"):
@@ -152,10 +156,17 @@ if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     Persona.init_class(client['mongoproyect'])
 
-    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'carpeta': 'roja', 'nif': 'x3610444l'}
-    p1 = Persona(**x)
+    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'x3610444l'}
+    e = {'_id': '2', 'nombre': 'Hao', 'apellido': 'Long', 'telefono': 84473466374, 'nif': 'y7502011t'}
+    i = {'_id': '3', 'nombre': 'Javier', 'apellido': 'Algarra', 'telefono': 3453245353, 'nif': 'e47583920'}
+    # cursor = client['mongoproyect'].persona.count_documents({'_id': x['_id']})
+    # print(cursor)
+
+    p1 = Persona(**i)
+    print(p1.find({'_id': p1.__dict__['_id']}).next())
     p1.save()
-   
+
+
     # a = 0
     # while a == 0:
     #     print('Bienvenido al Menu')
