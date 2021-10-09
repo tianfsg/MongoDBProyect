@@ -38,7 +38,7 @@ class ModelCursor:
         """ #TODO
         if ModelCursor.alive:
             self.command_cursor = self.command_cursor.next()
-            return self.modelClass(self.command_cursor[0])
+            return self.modelClass(list(self.command_cursor)[0])
 
     @property
     def alive(self):
@@ -96,13 +96,16 @@ class Persona:
                     break
 
         try:
-            if valido == True:
-                Persona.db.persona.insert_one(self.__dict__)
-                print('exitoso')
+            if valido == True: #True: entonces contiene requeridas y admisibles.
+                #comprobar si existe en la bd.
+                if list(Persona.find({'_id': self.__dict__['_id']}).command_cursor): #Significa que existe
+                    print('ya existe')
+                else: #Significa que no existe
+                    print('no existe')
             else:
                 print('invalido')
         except:
-            print('Error al guardar el json')
+            print('Algo fallo en Persona.save()')
     
 
     def set(self, **kwargs):
@@ -113,12 +116,10 @@ class Persona:
     def find(cls, filter):
         """ Devuelve un cursor de modelos        
         """ 
-        #TODO
-        cursorPersona = ModelCursor(Persona, Persona.db.personas.find())#Se da por hecho que personas es una coleccio
-        return cursorPersona
+        return ModelCursor(Persona, Persona.db.persona.find(filter))
 
     @classmethod
-    def init_class(cls, db, vars_path="model_name.vars"):
+    def init_class(cls, db, vars_path="personas_vars.txt"):
         """ Inicializa las variables de clase en la inicializacion del sistema.
         Argumentos:
             db (MongoClient) -- Conexion a la base de datos.
@@ -145,13 +146,12 @@ Q1 = []
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
+    #Persona.init_class(client['mongoproyect'])
     Persona.init_class(client['mongoproyect'])
-
-    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'carpeta': 'roja', 'nif': 'x3610444l'}
+    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'x3610444l'}
     p1 = Persona(**x)
+    p2 = Persona(**{'_id': '2', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293,'nif': 'x5610444l'})
     p1.save()
-    listaPrimero = list(p1.find({'_id': '1'}).command_cursor)
-   
     # a = 0
     # while a == 0:
     #     print('Bienvenido al Menu')
