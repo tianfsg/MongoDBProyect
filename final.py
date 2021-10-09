@@ -114,7 +114,7 @@ class Persona:
 
     def set(self, **kwargs):
         #TODO
-        self.db.persona.update_one({'_id': self.__dict__['_id']}, kwargs)
+        self.db.persona.update_one({'_id': self.__dict__['_id']}, {'$set': {kwargs}})
     
     @classmethod
     def find(cls, filter):
