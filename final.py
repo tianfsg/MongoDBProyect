@@ -30,7 +30,7 @@ class ModelCursor:
             documento que se itera.
             command_cursor (CommandCursor) -- Cursor de pymongo
         """
-        self.modelClass = model_class
+        self.model_class = model_class
         self.command_cursor = command_cursor
 
     
@@ -39,7 +39,7 @@ class ModelCursor:
         """ #TODO
         if ModelCursor.alive:
             self.command_cursor = self.command_cursor.next()
-            return self.modelClass(list(self.command_cursor)[0])
+            return self.model_class(list(self.command_cursor)[0])
 
     @property
     def alive(self):
@@ -113,6 +113,7 @@ class Persona:
     
 
     def set(self, **kwargs):
+        #TODO
         self.db.persona.update_one({'_id': self.__dict__['_id']}, kwargs)
     
     @classmethod
