@@ -146,7 +146,7 @@ Q1 = []
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
-    Persona.init_class(client['MongoDBProyect'])
+    Persona.init_class(client['mongoproyect'])
 
     x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'carpeta': 'roja', 'nif': 'x3610444l'}
     p1 = Persona(**x)
