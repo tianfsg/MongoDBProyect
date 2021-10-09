@@ -32,6 +32,7 @@ class ModelCursor:
         """
         self.model_class = model_class
         self.command_cursor = command_cursor
+
     
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
@@ -98,11 +99,14 @@ class Persona:
         try:
             if valido == True: #True: entonces contiene requeridas y admisibles.
                 #comprobar si existe en la bd.
-                if Persona.find({'_id': self.__dict__['_id']}): #Significa que existe
-                    print('ya existe')
+
+                if list(Persona.find({'_id': self.__dict__['_id']}).command_cursor): #Significa que existe
+                    
+                    self.set(self.__dict__)
+                    print('Se ha actualizado correctamente.')
                 else: #Significa que no existe
-                    Persona.db.persona.insert_one(self.__dict__)
-                    print('exitoso')
+                    self.db.persona.insert_one(self.__dict__)
+                    print('Registrado exitosamente.')
             else:
                 print('invalido')
         except:
@@ -110,17 +114,14 @@ class Persona:
     
 
     def set(self, **kwargs):
-        #TODO
-        pass #No olvidar eliminar esta linea una vez implementado
+        self.db.persona.update_one({'_id': self.__dict__['_id']}, kwargs)
     
     @classmethod
     def find(cls, filter):
         """ Devuelve un cursor de modelos        
         """ 
-        #TODO
-        cursorPersona = ModelCursor(Persona, Persona.db.personas.find(filter))#Se da por hecho que personas es una coleccion
+        cursorPersona = ModelCursor(Persona, Persona.db.persona.find(filter))    #Se da por hecho que personas es una coleccion
         return cursorPersona
-
 
     @classmethod
     def init_class(cls, db, vars_path="persona_vars.txt"):
@@ -156,16 +157,20 @@ if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     Persona.init_class(client['mongoproyect'])
 
-    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'x3610444l'}
-    e = {'_id': '2', 'nombre': 'Hao', 'apellido': 'Long', 'telefono': 84473466374, 'nif': 'y7502011t'}
+    #X, E dentro de mongo
+    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'y7502011t'}
+    e = {'_id': '2', 'nombre': 'Hao', 'apellido': 'Long', 'telefono': 84473466374, 'nif': 'x3610444l'}
     i = {'_id': '3', 'nombre': 'Javier', 'apellido': 'Algarra', 'telefono': 3453245353, 'nif': 'e47583920'}
+
     # cursor = client['mongoproyect'].persona.count_documents({'_id': x['_id']})
-    # print(cursor)
+    # cursor = client['mongoproyect'].persona.find()
+    # print(cursor[0])
 
-    p1 = Persona(**i)
-    print(p1.find({'_id': p1.__dict__['_id']}).next())
+    p1 = Persona(**x)
+    p2 = Persona(**e)
+    #print(p1.find({'_id': p1.__dict__['_id']}).command_cursor)
     p1.save()
-
+    p2.save()
 
     # a = 0
     # while a == 0:
