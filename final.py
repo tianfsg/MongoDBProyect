@@ -30,13 +30,14 @@ class ModelCursor:
             documento que se itera.
             command_cursor (CommandCursor) -- Cursor de pymongo
         """
-        self.modelClass = model_class
+        self.model_class = model_class
         self.command_cursor = command_cursor
+
     
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
         """
-        if ModelCursor.alive():
+        if ModelCursor.alive:
             self.command_cursor = self.command_cursor.next()
             return self.model_class(self.command_cursor[0])
 
@@ -44,7 +45,7 @@ class ModelCursor:
     def alive(self):
         """True si existen más modelos por devolver, False en caso contrario
         """
-        return self.command_cursor.hasNext()
+        return ModelCursor.command_cursor.hasNext()
 
 class Persona:
     """ Prototipo de la clase modelo
@@ -59,7 +60,6 @@ class Persona:
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-
 
     def save(self):
 
@@ -97,41 +97,50 @@ class Persona:
                     break
 
         try:
-            if valido == True:
-                Persona.db.persona.insert_one(self.__dict__)
-                print('exitoso')
+            if valido == True: #True: entonces contiene requeridas y admisibles.
+                #comprobar si existe en la bd.
+
+                if list(Persona.find({'_id': self.__dict__['_id']}).command_cursor): #Significa que existe
+                    
+                    self.set(self.__dict__)
+                    print('Se ha actualizado correctamente.')
+                else: #Significa que no existe
+                    self.db.persona.insert_one(self.__dict__)
+                    print('Registrado exitosamente.')
             else:
                 print('invalido')
         except:
-            print('Error al guardar el json')
+            print('Algo fallo en Persona.save()')
     
 
     def set(self, **kwargs):
-        #TODO
-        pass #No olvidar eliminar esta linea una vez implementado
+        self.db.persona.update_one({'_id': self.__dict__['_id']}, kwargs)
     
     @classmethod
     def find(cls, filter):
         """ Devuelve un cursor de modelos        
         """ 
-        #TODO
-        cursorPersona = ModelCursor(Persona, Persona.db.personas.find())#Se da por hecho que personas es una coleccio
-        pass #No olvidar eliminar esta linea una vez implementado
+        cursorPersona = ModelCursor(Persona, Persona.db.persona.find(filter))    #Se da por hecho que personas es una coleccion
+        return cursorPersona
 
     @classmethod
-    def init_class(cls, db, vars_path="model_vars.txt"):
+    def init_class(cls, db, vars_path="persona_vars.txt"):
         """ Inicializa las variables de clase en la inicializacion del sistema.
         Argumentos:
             db (MongoClient) -- Conexion a la base de datos.
             vars_path (str) -- ruta al archivo con la definicion de variables
             del modelo.
         """
-        file = open(vars_path, 'r')
-        content_file = file.read()
-        nothing = content_file.split('\n')
-        required_vars = nothing[0].split(',')
-        admissible_vars = nothing[1].split(',')
-        file.close()
+
+        try:
+            file = open(vars_path, 'r')
+            content_file = file.read()
+            nothing = content_file.split('\n')
+            required_vars = nothing[0].split(',')
+            admissible_vars = nothing[1].split(',')
+            file.close()
+        except:
+            print('el fichero de vars no existe')
 
         Persona.required_vars = required_vars
         Persona.admissible_vars = admissible_vars
@@ -148,10 +157,21 @@ if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     Persona.init_class(client['mongoproyect'])
 
-    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'carpeta': 'roja', 'nif': 'x3610444l'}
+    #X, E dentro de mongo
+    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'y7502011t'}
+    e = {'_id': '2', 'nombre': 'Hao', 'apellido': 'Long', 'telefono': 84473466374, 'nif': 'x3610444l'}
+    i = {'_id': '3', 'nombre': 'Javier', 'apellido': 'Algarra', 'telefono': 3453245353, 'nif': 'e47583920'}
+
+    # cursor = client['mongoproyect'].persona.count_documents({'_id': x['_id']})
+    # cursor = client['mongoproyect'].persona.find()
+    # print(cursor[0])
+
     p1 = Persona(**x)
+    p2 = Persona(**e)
+    #print(p1.find({'_id': p1.__dict__['_id']}).command_cursor)
     p1.save()
-   
+    p2.save()
+
     # a = 0
     # while a == 0:
     #     print('Bienvenido al Menu')
@@ -175,10 +195,3 @@ if __name__ == '__main__':
     #     else:
     #         print()
     #         print('introduzca un valor valido\n')
-            
-   
-   
-
-
-
-
