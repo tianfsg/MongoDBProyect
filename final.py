@@ -59,7 +59,6 @@ class Persona:
     db = None
 
     def __init__(self, **kwargs):
-        self._id = None
         self.__dict__.update(kwargs)
 
     def save(self):
@@ -100,13 +99,13 @@ class Persona:
         try:
             if valido == True: #True: entonces contiene requeridas y admisibles.
                 #comprobar si existe en la bd.
-                if self._id != None: #Significa que existe
+                if "_id" in locals(): #Significa que existe
                     self.set(self.__dict__)
                     print('Se ha actualizado correctamente.')
                 else: #Significa que no existe
                     print('antes de explotar')
                     self._id = self.db.persona.insert_one(self.__dict__)
-                    print(self._id[0])
+                    print(self._id)
                     print('Registrado exitosamente.')
             else:
                 print('invalido')
