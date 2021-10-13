@@ -1,2 +1,2 @@
-_id,nombre,apellido,nif
+nombre,apellido,nif
 edad,centro,telefono
