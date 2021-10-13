@@ -61,7 +61,6 @@ class Persona:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         lista = list(self.__dict__.keys())
-        self.valido = True
         cont = 0
 
         for i in range(0, len(self.required_vars), 1): 
@@ -79,35 +78,19 @@ class Persona:
                         var_flag = True         #Si esta dentro de las variables true
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
-                    print("La key: *" + lista[i] + "* NO ES VALIDA")
-                    self.valido = False
-                    break
+                    raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
 
     def save(self):
-        #Comprueba si existe con _id
-            #Comprobar requierd vars
-            #si se da:
-                #Si existe: llamar al set con updateOne
-                #Si no existe: Crearlo con el insert desde save
-            #si no se da
-            #nada
-        #Comprobador de la posesion de las required_vars
-
-
-
         try:
-            if self.valido == True: #True: entonces contiene requeridas y admisibles.
-                #comprobar si existe en la bd.
-                if "_id" in locals(): #Significa que existe
-                    self.set(self.__dict__)
-                    print('Se ha actualizado correctamente.')
-                else: #Significa que no existe
-                    print('antes de explotar')
-                    self._id = self.db.persona.insert_one(self.__dict__)
-                    print(self._id)
-                    print('Registrado exitosamente.')
-            else:
-                print('invalido')
+            #comprobar si existe en la bd.
+            if "_id" in locals(): #Significa que existe
+                self.set(self.__dict__)
+                print('Se ha actualizado correctamente.')
+            else: #Significa que no existe
+                print('antes de explotar')
+                self._id = self.db.persona.insert_one(self.__dict__)
+                print(self._id)
+                print('Registrado exitosamente.')
         except:
             print('Algo fallo en Persona.save()')
     
@@ -119,7 +102,7 @@ class Persona:
         for i in range(0, len(mod), 1):
             for x in range(0, len(cur), 1):
                 if cur[x] == mod[i]:
-                    self.__dict__[x] = kwargs[i]
+                    self.__dict__[cur[x]] = kwargs[mod[i]]
     
     @classmethod
     def find(cls, filter):
@@ -174,6 +157,7 @@ if __name__ == '__main__':
     p1 = Persona(**w)
     #print(p1.find({'_id': p1.__dict__['_id']}).command_cursor)
     p1.save()
+    p1.set(**{'telefono': 000000000, 'telefonos': 875246678})
 
     # a = 0
     # while a == 0:
