@@ -113,8 +113,13 @@ class Persona:
     
 
     def set(self, **kwargs):
-        filter = {'_id': self.__dict__['_id']}
-        self.db.persona.update_one(filter, kwargs)
+        cur = list(self.__dict__.keys())
+        mod = list(kwargs.keys())
+
+        for i in range(0, len(mod), 1):
+            for x in range(0, len(cur), 1):
+                if cur[x] == mod[i]:
+                    self.__dict__[x] = kwargs[i]
     
     @classmethod
     def find(cls, filter):
