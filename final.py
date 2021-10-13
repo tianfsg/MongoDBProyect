@@ -60,28 +60,15 @@ class Persona:
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-
-    def save(self):
-        #Comprueba si existe con _id
-            #Comprobar requierd vars
-            #si se da:
-                #Si existe: llamar al set con updateOne
-                #Si no existe: Crearlo con el insert desde save
-            #si no se da
-            #nada
-        #Comprobador de la posesion de las required_vars
-
         lista = list(self.__dict__.keys())
-        valido = True
+        self.valido = True
         cont = 0
-      
 
         for i in range(0, len(self.required_vars), 1): 
             for x in range(0, len(self.__dict__), 1):
                 if self.required_vars[i] == lista[x]:
                     cont += 1
                     break
-    
         if cont == len(self.required_vars):
             #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
             all_vars = self.required_vars + self.admissible_vars
@@ -93,11 +80,23 @@ class Persona:
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
                     print("La key: *" + lista[i] + "* NO ES VALIDA")
-                    valido = False
+                    self.valido = False
                     break
 
+    def save(self):
+        #Comprueba si existe con _id
+            #Comprobar requierd vars
+            #si se da:
+                #Si existe: llamar al set con updateOne
+                #Si no existe: Crearlo con el insert desde save
+            #si no se da
+            #nada
+        #Comprobador de la posesion de las required_vars
+
+
+
         try:
-            if valido == True: #True: entonces contiene requeridas y admisibles.
+            if self.valido == True: #True: entonces contiene requeridas y admisibles.
                 #comprobar si existe en la bd.
                 if "_id" in locals(): #Significa que existe
                     self.set(self.__dict__)
