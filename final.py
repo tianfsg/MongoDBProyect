@@ -36,12 +36,15 @@ class ModelCursor:
     
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
-        """
+        """ #TODO
         if ModelCursor.alive:
             self.command_cursor = self.command_cursor.next()
             return self.model_class(list(self.command_cursor)[0])
+<<<<<<< HEAD
         
         #TODO Que pasa si el ModelCursor no es Alive , y falta comprobar si funciona
+=======
+>>>>>>> a0ae383 (cambio constructor y terminado el set)
 
     @property
     def alive(self):
@@ -61,7 +64,14 @@ class Persona:
     db = None
 
     def __init__(self, **kwargs):
+<<<<<<< HEAD
         lista = list(kwargs.keys())
+=======
+
+        self.__dict__.update(kwargs)
+        lista = list(self.__dict__.keys())
+        self.valido = True
+>>>>>>> a0ae383 (cambio constructor y terminado el set)
         cont = 0
 
         for i in range(0, len(self.required_vars), 1): #Comprobador de las variables requeridas
@@ -79,15 +89,32 @@ class Persona:
                         var_flag = True         #Si esta dentro de las variables true
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
+<<<<<<< HEAD
                     raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
         else:
             raise Exception("Alguna variable requerida no es valida")
+=======
+                    print("La key: *" + lista[i] + "* NO ES VALIDA")
+                    valido = False
+                    break        
+
+    def save(self):
+        #Comprueba si existe con _id
+            #Comprobar requierd vars
+            #si se da:
+                #Si existe: llamar al set con updateOne
+                #Si no existe: Crearlo con el insert desde save
+            #si no se da
+            #nada
+        #Comprobador de la posesion de las required_vars
+>>>>>>> a0ae383 (cambio constructor y terminado el set)
 
         self.__dict__.update(kwargs)
         self.modified_vars = {}
 
     def save(self):
         try:
+<<<<<<< HEAD
             #comprobar si existe en la bd.
             if hasattr(self,'_id'): #Significa que existe
                 print(self._id.inserted_id)
@@ -98,6 +125,21 @@ class Persona:
                 self._id = self.db.persona.insert_one(self.__dict__)
                 print(self._id)
                 print('Registrado exitosamente.')
+=======
+            if self.valido == True: #True: entonces contiene requeridas y admisibles.
+
+                #comprobar si existe en la bd.
+                if "_id" in locals(): #Significa que existe
+                    self.db.persona.update_one(self.updated_values)
+                    print('Se ha actualizado correctamente.')
+                else: #Significa que no existe
+                    print('antes de explotar')
+                    self._id = self.db.persona.insert_one(self.__dict__)
+                    print(self._id)
+                    print('Registrado exitosamente.')
+            else:
+                print('Datos invalidos')
+>>>>>>> a0ae383 (cambio constructor y terminado el set)
         except:
             print('Algo fallo en Persona.save()')
     
@@ -106,6 +148,7 @@ class Persona:
         cur = list(self.__dict__.keys())
         mod = list(kwargs.keys())
 
+<<<<<<< HEAD
         modified_vars_bckp = self.modified_vars #Se guardan variables cambiadas en una variable de funcion
         del self.modified_vars #Se borra del diccionario del modelo las variables cambiadas
 
@@ -128,6 +171,14 @@ class Persona:
                     modified_vars_bckp.update({mod[i]:kwargs[mod[i]]})   #Se añaden los elementos cambiados a variables cambiadas
         
         self.modified_vars = modified_vars_bckp #Se vuelve a guardar el diccionario de variables cambiadas en el Modelo
+=======
+        for i in range(0, len(mod), 1):
+            for x in range(0, len(cur), 1):
+                if cur[x] == mod[i]:
+                    self.__dict__[x] = kwargs[i]
+
+
+>>>>>>> a0ae383 (cambio constructor y terminado el set)
     
     @classmethod
     def find(cls, filter):
@@ -182,7 +233,11 @@ if __name__ == '__main__':
     p1 = Persona(**w)
     #print(p1.find({'_id': p1.__dict__['_id']}).command_cursor)
     p1.save()
+<<<<<<< HEAD
     p1.set(**{'telefono': 000000000})
+=======
+    p1.set({'telefono': 684847295})
+>>>>>>> a0ae383 (cambio constructor y terminado el set)
     p1.save()
 
     # a = 0
