@@ -59,6 +59,7 @@ class Persona:
     db = None
 
     def __init__(self, **kwargs):
+        self._id = None
         self.__dict__.update(kwargs)
 
     def save(self):
@@ -74,6 +75,7 @@ class Persona:
         lista = list(self.__dict__.keys())
         valido = True
         cont = 0
+      
 
         for i in range(0, len(self.required_vars), 1): 
             for x in range(0, len(self.__dict__), 1):
@@ -98,13 +100,13 @@ class Persona:
         try:
             if valido == True: #True: entonces contiene requeridas y admisibles.
                 #comprobar si existe en la bd.
-
-                if list(Persona.find({'_id': self.__dict__['_id']}).command_cursor): #Significa que existe
-                    
+                if self._id != None: #Significa que existe
                     self.set(self.__dict__)
                     print('Se ha actualizado correctamente.')
                 else: #Significa que no existe
-                    self.db.persona.insert_one(self.__dict__)
+                    print('antes de explotar')
+                    self._id = self.db.persona.insert_one(self.__dict__)
+                    print(self._id[0])
                     print('Registrado exitosamente.')
             else:
                 print('invalido')
@@ -113,8 +115,8 @@ class Persona:
     
 
     def set(self, **kwargs):
-        #TODO
-        self.db.persona.update_one({'_id': self.__dict__['_id']}, {'$set': {kwargs}})
+        filter = {'_id': self.__dict__['_id']}
+        self.db.persona.update_one(filter, kwargs)
     
     @classmethod
     def find(cls, filter):
@@ -156,19 +158,19 @@ if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     Persona.init_class(client['mongoproyect'])
 
-    x = {'_id': '1', 'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'x3610444l'}
-    e = {'_id': '2', 'nombre': 'Hao', 'apellido': 'Long', 'telefono': 84473466374, 'nif': 'y7502011t'}
-    i = {'_id': '3', 'nombre': 'Javier', 'apellido': 'Algarra', 'telefono': 3453245353, 'nif': 'e47583920'}
+    #X, E dentro de mongo
+    x = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293, 'nif': 'y7502011t'}
+    e = {'nombre': 'Hao', 'apellido': 'Long', 'telefono': 84473466374, 'nif': 'x3610444l'}
+    i = {'nombre': 'Javier', 'apellido': 'Algarra', 'telefono': 3453245353, 'nif': 'e47583920'}
+    w = {'nombre': 'Pablo', 'apellido': 'Ramos', 'telefono': 6558347834, 'nif': 'xxxxxxxxx'}
 
     # cursor = client['mongoproyect'].persona.count_documents({'_id': x['_id']})
     # cursor = client['mongoproyect'].persona.find()
     # print(cursor[0])
 
-    p1 = Persona(**x)
-    p2 = Persona(**e)
+    p1 = Persona(**w)
     #print(p1.find({'_id': p1.__dict__['_id']}).command_cursor)
     p1.save()
-    p2.save()
 
     # a = 0
     # while a == 0:
