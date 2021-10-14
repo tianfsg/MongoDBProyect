@@ -65,6 +65,7 @@ class Persona:
 
     def __init__(self, **kwargs):
 <<<<<<< HEAD
+<<<<<<< HEAD
         lista = list(kwargs.keys())
 =======
 
@@ -72,6 +73,22 @@ class Persona:
         lista = list(self.__dict__.keys())
         self.valido = True
 >>>>>>> a0ae383 (cambio constructor y terminado el set)
+=======
+        self.__dict__.update(kwargs)
+
+    def save(self):
+        #Comprueba si existe con _id
+            #Comprobar requierd vars
+            #si se da:
+                #Si existe: llamar al set con updateOne
+                #Si no existe: Crearlo con el insert desde save
+            #si no se da
+            #nada
+        #Comprobador de la posesion de las required_vars
+
+        lista = list(self.__dict__.keys())
+        self.valido = True
+>>>>>>> 2ad78f4456e0a53f6ab45c9a92d3499292171c8f
         cont = 0
 
         for i in range(0, len(self.required_vars), 1): #Comprobador de las variables requeridas
@@ -90,10 +107,13 @@ class Persona:
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
 <<<<<<< HEAD
+<<<<<<< HEAD
                     raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
         else:
             raise Exception("Alguna variable requerida no es valida")
 =======
+=======
+>>>>>>> 2ad78f4456e0a53f6ab45c9a92d3499292171c8f
                     print("La key: *" + lista[i] + "* NO ES VALIDA")
                     valido = False
                     break        
@@ -107,13 +127,17 @@ class Persona:
             #si no se da
             #nada
         #Comprobador de la posesion de las required_vars
+<<<<<<< HEAD
 >>>>>>> a0ae383 (cambio constructor y terminado el set)
+=======
+>>>>>>> 2ad78f4456e0a53f6ab45c9a92d3499292171c8f
 
         self.__dict__.update(kwargs)
         self.modified_vars = {}
 
     def save(self):
         try:
+<<<<<<< HEAD
 <<<<<<< HEAD
             #comprobar si existe en la bd.
             if hasattr(self,'_id'): #Significa que existe
@@ -126,11 +150,17 @@ class Persona:
                 print(self._id)
                 print('Registrado exitosamente.')
 =======
+=======
+>>>>>>> 2ad78f4456e0a53f6ab45c9a92d3499292171c8f
             if self.valido == True: #True: entonces contiene requeridas y admisibles.
 
                 #comprobar si existe en la bd.
                 if "_id" in locals(): #Significa que existe
+<<<<<<< HEAD
                     self.db.persona.update_one(self.updated_values)
+=======
+                    
+>>>>>>> 2ad78f4456e0a53f6ab45c9a92d3499292171c8f
                     print('Se ha actualizado correctamente.')
                 else: #Significa que no existe
                     print('antes de explotar')
@@ -139,7 +169,10 @@ class Persona:
                     print('Registrado exitosamente.')
             else:
                 print('Datos invalidos')
+<<<<<<< HEAD
 >>>>>>> a0ae383 (cambio constructor y terminado el set)
+=======
+>>>>>>> 2ad78f4456e0a53f6ab45c9a92d3499292171c8f
         except:
             print('Algo fallo en Persona.save()')
     
@@ -148,6 +181,7 @@ class Persona:
         cur = list(self.__dict__.keys())
         mod = list(kwargs.keys())
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         modified_vars_bckp = self.modified_vars #Se guardan variables cambiadas en una variable de funcion
         del self.modified_vars #Se borra del diccionario del modelo las variables cambiadas
@@ -179,6 +213,14 @@ class Persona:
 
 
 >>>>>>> a0ae383 (cambio constructor y terminado el set)
+=======
+        for i in range(0, len(mod), 1):
+            for x in range(0, len(cur), 1):
+                if cur[x] == mod[i]:
+                    self.__dict__[x] = kwargs[i]
+
+
+>>>>>>> 2ad78f4456e0a53f6ab45c9a92d3499292171c8f
     
     @classmethod
     def find(cls, filter):
@@ -234,10 +276,14 @@ if __name__ == '__main__':
     #print(p1.find({'_id': p1.__dict__['_id']}).command_cursor)
     p1.save()
 <<<<<<< HEAD
+<<<<<<< HEAD
     p1.set(**{'telefono': 000000000})
 =======
     p1.set({'telefono': 684847295})
 >>>>>>> a0ae383 (cambio constructor y terminado el set)
+=======
+    p1.set({'telefono': 684847295})
+>>>>>>> 2ad78f4456e0a53f6ab45c9a92d3499292171c8f
     p1.save()
 
     # a = 0
