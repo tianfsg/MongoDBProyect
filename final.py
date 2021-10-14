@@ -61,7 +61,20 @@ class Persona:
     db = None
 
     def __init__(self, **kwargs):
-        lista = list(kwargs.keys())
+        self.__dict__.update(kwargs)
+
+    def save(self):
+        #Comprueba si existe con _id
+            #Comprobar requierd vars
+            #si se da:
+                #Si existe: llamar al set con updateOne
+                #Si no existe: Crearlo con el insert desde save
+            #si no se da
+            #nada
+        #Comprobador de la posesion de las required_vars
+
+        lista = list(self.__dict__.keys())
+        self.valido = True
         cont = 0
 
         for i in range(0, len(self.required_vars), 1): #Comprobador de las variables requeridas
@@ -79,25 +92,38 @@ class Persona:
                         var_flag = True         #Si esta dentro de las variables true
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
-                    raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
-        else:
-            raise Exception("Alguna variable requerida no es valida")
+                    print("La key: *" + lista[i] + "* NO ES VALIDA")
+                    valido = False
+                    break        
+
+    def save(self):
+        #Comprueba si existe con _id
+            #Comprobar requierd vars
+            #si se da:
+                #Si existe: llamar al set con updateOne
+                #Si no existe: Crearlo con el insert desde save
+            #si no se da
+            #nada
+        #Comprobador de la posesion de las required_vars
 
         self.__dict__.update(kwargs)
         self.modified_vars = {}
 
     def save(self):
         try:
-            #comprobar si existe en la bd.
-            if hasattr(self,'_id'): #Significa que existe
-                print(self._id.inserted_id)
-                values = {"$set":self.modified_vars}
-                self.db.persona.update_one({"_id": self._id.inserted_id}, values)
-                print('Se ha actualizado correctamente.')
-            else: #Significa que no existe
-                self._id = self.db.persona.insert_one(self.__dict__)
-                print(self._id)
-                print('Registrado exitosamente.')
+            if self.valido == True: #True: entonces contiene requeridas y admisibles.
+
+                #comprobar si existe en la bd.
+                if "_id" in locals(): #Significa que existe
+                    
+                    print('Se ha actualizado correctamente.')
+                else: #Significa que no existe
+                    print('antes de explotar')
+                    self._id = self.db.persona.insert_one(self.__dict__)
+                    print(self._id)
+                    print('Registrado exitosamente.')
+            else:
+                print('Datos invalidos')
         except:
             print('Algo fallo en Persona.save()')
     
@@ -106,28 +132,12 @@ class Persona:
         cur = list(self.__dict__.keys())
         mod = list(kwargs.keys())
 
-        modified_vars_bckp = self.modified_vars #Se guardan variables cambiadas en una variable de funcion
-        del self.modified_vars #Se borra del diccionario del modelo las variables cambiadas
-
-        #comprobar todas las variables admisibles y requeridas
-        lista = list(kwargs.keys())
-        all_vars = self.required_vars + self.admissible_vars
-        for i in range(0, len(kwargs), 1):
-            var_flag = False
-            for x in range(0, len(all_vars), 1):
-                if all_vars[x] == lista[i]:
-                    var_flag = True         #Si esta dentro de las variables true
-                    break
-            if var_flag == False:           #Si no esta dentro de las variables se borra
-                raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
-        
-        for i in range(0, len(mod), 1): #Bucle para cambiar el Atributo
+        for i in range(0, len(mod), 1):
             for x in range(0, len(cur), 1):
                 if cur[x] == mod[i]:
-                    self.__dict__[cur[x]] = kwargs[mod[i]]
-                    modified_vars_bckp.update({mod[i]:kwargs[mod[i]]})   #Se añaden los elementos cambiados a variables cambiadas
-        
-        self.modified_vars = modified_vars_bckp #Se vuelve a guardar el diccionario de variables cambiadas en el Modelo
+                    self.__dict__[x] = kwargs[i]
+
+
     
     @classmethod
     def find(cls, filter):
@@ -182,7 +192,7 @@ if __name__ == '__main__':
     p1 = Persona(**w)
     #print(p1.find({'_id': p1.__dict__['_id']}).command_cursor)
     p1.save()
-    p1.set(**{'telefono': 000000000})
+    p1.set({'telefono': 684847295})
     p1.save()
 
     # a = 0
