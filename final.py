@@ -36,7 +36,7 @@ class ModelCursor:
     
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
-        """ #TODO
+        """
         if ModelCursor.alive:
             self.command_cursor = self.command_cursor.next()
             return self.model_class(list(self.command_cursor)[0])
@@ -79,12 +79,13 @@ class Persona:
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
                     raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
+        self.modified_vars = {}
 
     def save(self):
         try:
             #comprobar si existe en la bd.
             if "_id" in locals(): #Significa que existe
-                self.set(self.__dict__)
+                self.db.persona.update_one({"_id": self._id}, self.modified_vars)
                 print('Se ha actualizado correctamente.')
             else: #Significa que no existe
                 print('antes de explotar')
@@ -99,10 +100,29 @@ class Persona:
         cur = list(self.__dict__.keys())
         mod = list(kwargs.keys())
 
+        modified_vars_bckp = self.modified_vars #Se guardan variables cambiadas en una variable de funcion
+
+        del self.modified_vars #Se borra del diccionario del modelo las variables cambiadas
+
+        lista = list(self.__dict__.keys())
+        #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
+        all_vars = self.required_vars + self.admissible_vars
+        for i in range(0, len(self.__dict__), 1):
+            var_flag = False
+            for x in range(0, len(all_vars), 1):
+                if all_vars[x] == lista[i]:
+                    var_flag = True         #Si esta dentro de las variables true
+                    break
+            if var_flag == False:           #Si no esta dentro de las variables se borra
+                raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
+
         for i in range(0, len(mod), 1):
             for x in range(0, len(cur), 1):
                 if cur[x] == mod[i]:
                     self.__dict__[cur[x]] = kwargs[mod[i]]
+                    modified_vars_bckp.update({mod[i]:kwargs[mod[i]]})   #Se añaden los elementos cambiados a variables cambiadas
+        
+        self.modified_vars = modified_vars_bckp #Se vuelve a guardar el diccionario de variables cambiadas en el Modelo
     
     @classmethod
     def find(cls, filter):
