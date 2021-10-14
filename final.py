@@ -40,6 +40,8 @@ class ModelCursor:
         if ModelCursor.alive:
             self.command_cursor = self.command_cursor.next()
             return self.model_class(list(self.command_cursor)[0])
+        
+        #TODO Que pasa si el ModelCursor no es Alive , y falta comprobar si funciona
 
     @property
     def alive(self):
@@ -80,7 +82,7 @@ class Persona:
                     raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
         else:
             raise Exception("Alguna variable requerida no es valida")
-            
+
         self.__dict__.update(kwargs)
         self.modified_vars = {}
 
