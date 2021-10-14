@@ -59,19 +59,18 @@ class Persona:
     db = None
 
     def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-        lista = list(self.__dict__.keys())
+        lista = list(kwargs.keys())
         cont = 0
 
-        for i in range(0, len(self.required_vars), 1): 
-            for x in range(0, len(self.__dict__), 1):
+        for i in range(0, len(self.required_vars), 1): #Comprobador de las variables requeridas
+            for x in range(0, len(kwargs), 1):
                 if self.required_vars[i] == lista[x]:
                     cont += 1
                     break
-        if cont == len(self.required_vars):
-            #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
+        if cont == len(self.required_vars): #Entrar solo si coincidn las required vars
+            #Comprobar todas las variables
             all_vars = self.required_vars + self.admissible_vars
-            for i in range(0, len(self.__dict__), 1):
+            for i in range(0, len(kwargs), 1):
                 var_flag = False
                 for x in range(0, len(all_vars), 1):
                     if all_vars[x] == lista[i]:
@@ -79,16 +78,21 @@ class Persona:
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
                     raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
+        else:
+            raise Exception("Alguna variable requerida no es valida")
+            
+        self.__dict__.update(kwargs)
         self.modified_vars = {}
 
     def save(self):
         try:
             #comprobar si existe en la bd.
-            if "_id" in locals(): #Significa que existe
-                self.db.persona.update_one({"_id": self._id}, self.modified_vars)
+            if hasattr(self,'_id'): #Significa que existe
+                print(self._id.inserted_id)
+                values = {"$set":self.modified_vars}
+                self.db.persona.update_one({"_id": self._id.inserted_id}, values)
                 print('Se ha actualizado correctamente.')
             else: #Significa que no existe
-                print('antes de explotar')
                 self._id = self.db.persona.insert_one(self.__dict__)
                 print(self._id)
                 print('Registrado exitosamente.')
@@ -101,13 +105,12 @@ class Persona:
         mod = list(kwargs.keys())
 
         modified_vars_bckp = self.modified_vars #Se guardan variables cambiadas en una variable de funcion
-
         del self.modified_vars #Se borra del diccionario del modelo las variables cambiadas
 
-        lista = list(self.__dict__.keys())
-        #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
+        #comprobar todas las variables admisibles y requeridas
+        lista = list(kwargs.keys())
         all_vars = self.required_vars + self.admissible_vars
-        for i in range(0, len(self.__dict__), 1):
+        for i in range(0, len(kwargs), 1):
             var_flag = False
             for x in range(0, len(all_vars), 1):
                 if all_vars[x] == lista[i]:
@@ -115,8 +118,8 @@ class Persona:
                     break
             if var_flag == False:           #Si no esta dentro de las variables se borra
                 raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
-
-        for i in range(0, len(mod), 1):
+        
+        for i in range(0, len(mod), 1): #Bucle para cambiar el Atributo
             for x in range(0, len(cur), 1):
                 if cur[x] == mod[i]:
                     self.__dict__[cur[x]] = kwargs[mod[i]]
@@ -177,7 +180,8 @@ if __name__ == '__main__':
     p1 = Persona(**w)
     #print(p1.find({'_id': p1.__dict__['_id']}).command_cursor)
     p1.save()
-    p1.set(**{'telefono': 000000000, 'telefonos': 875246678})
+    p1.set(**{'telefono': 000000000})
+    p1.save()
 
     # a = 0
     # while a == 0:
