@@ -1,5 +1,6 @@
 __author__ = 'Sebastian-Gutierrez_Hao-Long'
 
+from os import X_OK
 from pymongo import MongoClient
 
 def getCityGeoJSON(address):
@@ -60,69 +61,84 @@ class Persona:
 
     def __init__(self, **kwargs):
 
-        self.__dict__.update(kwargs)
-        lista = list(self.__dict__.keys())
-        self.valido = True
+        lista = list(kwargs.keys())
         cont = 0
 
         for i in range(0, len(self.required_vars), 1): 
-            for x in range(0, len(self.__dict__), 1):
+            for x in range(0, len(kwargs), 1):
                 if self.required_vars[i] == lista[x]:
                     cont += 1
                     break
-    
         if cont == len(self.required_vars):
             #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
             all_vars = self.required_vars + self.admissible_vars
-            for i in range(0, len(self.__dict__), 1):
+            for i in range(0, len(kwargs), 1):
                 var_flag = False
                 for x in range(0, len(all_vars), 1):
                     if all_vars[x] == lista[i]:
                         var_flag = True         #Si esta dentro de las variables true
                         break
                 if var_flag == False:           #Si no esta dentro de las variables se borra
-                    print("La key: *" + lista[i] + "* NO ES VALIDA")
-                    valido = False
-                    break        
+                    raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
+        
+        self.__dict__.update(kwargs)
+        self.modified_list = []
+
 
     def save(self):
-        #Comprueba si existe con _id
-            #Comprobar requierd vars
-            #si se da:
-                #Si existe: llamar al set con updateOne
-                #Si no existe: Crearlo con el insert desde save
-            #si no se da
-            #nada
-        #Comprobador de la posesion de las required_vars
+
+        modified_vars = {}
 
         try:
-            if self.valido == True: #True: entonces contiene requeridas y admisibles.
+            #comprobar si existe en la bd.
+            #un algoritmo que nos cree un diccionario con las clave:valor modificadas
+            #para luego pasarselas al update_one
 
-                #comprobar si existe en la bd.
-                if "_id" in locals(): #Significa que existe
-                    self.db.persona.update_one(self.updated_values)
-                    print('Se ha actualizado correctamente.')
-                else: #Significa que no existe
-                    print('antes de explotar')
-                    self._id = self.db.persona.insert_one(self.__dict__)
-                    print(self._id)
-                    print('Registrado exitosamente.')
-            else:
-                print('Datos invalidos')
+            for x in self.modified_list:
+                modified_vars[x] = self.__dict__[x]
+
+            if hasattr(self, '_id'): #Significa que existe
+                self.db.persona.update_one({'_id': self.__dict__['_id']}, {'$set': {modified_vars}})
+                print('Se ha actualizado correctamente.')
+            else: #Significa que no existe
+                self.__dict__.pop('modified_list')
+                dicc = self.__dict__.copy()
+                self._id = self.db.persona.insert_one(dicc)
+                print(self._id)
+                print('Registrado exitosamente.')
         except:
             print('Algo fallo en Persona.save()')
     
 
     def set(self, **kwargs):
-        cur = list(self.__dict__.keys())
-        mod = list(kwargs.keys())
 
-        for i in range(0, len(mod), 1):
-            for x in range(0, len(cur), 1):
-                if cur[x] == mod[i]:
-                    self.__dict__[x] = kwargs[i]
+        #TODO 
+        lista = list(kwargs.keys())
+        cont = 0
+
+       
+        #comprobar todas las variables porque no hemos separado las en el diccionario las RV de las AV
+        all_vars = self.required_vars + self.admissible_vars
+        for i in range(0, len(kwargs), 1):
+            var_flag = False
+            for x in range(0, len(all_vars), 1):
+                if all_vars[x] == lista[i]:
+                    var_flag = True         #Si esta dentro de las variables true
+                    break
+            if var_flag == False:           #Si no esta dentro de las variables se borra
+                raise Exception("La key: *" + lista[i] + "* NO ES VALIDA")
+            
+        self.__dict__.update(kwargs)
+        self.modified_list.extend(kwargs.keys())
 
 
+        # cur = list(self.__dict__.keys())
+        # mod = list(kwargs.keys())
+
+        # for i in range(0, len(mod), 1):
+        #     for x in range(0, len(cur), 1):
+        #         if cur[x] == mod[i]:
+        #             self.__dict__[cur[x]] = kwargs[mod[i]]
     
     @classmethod
     def find(cls, filter):
@@ -176,10 +192,8 @@ if __name__ == '__main__':
 
     p1 = Persona(**w)
     #print(p1.find({'_id': p1.__dict__['_id']}).command_cursor)
+    p1.set(**{'telefono': 000000000})
     p1.save()
-    p1.set({'telefono': 684847295})
-    p1.save()
-
     # a = 0
     # while a == 0:
     #     print('Bienvenido al Menu')
