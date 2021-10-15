@@ -1,5 +1,6 @@
 __author__ = 'Sebastian-Gutierrez_Hao-Long'
 
+from typing import Iterator
 from pymongo import MongoClient
 
 def getCityGeoJSON(address):
@@ -37,9 +38,8 @@ class ModelCursor:
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
         """
-        if ModelCursor.alive:
-            self.command_cursor = self.command_cursor.next()
-            return self.model_class(list(self.command_cursor)[0])
+        if self.alive:
+            return self.model_class(**self.command_cursor.next())
         
         #TODO Que pasa si el ModelCursor no es Alive , y falta comprobar si funciona
 
@@ -47,6 +47,7 @@ class ModelCursor:
     def alive(self):
         """True si existen más modelos por devolver, False en caso contrario
         """
+        
         return self.command_cursor.hasNext()
 
 class Persona:
@@ -137,6 +138,8 @@ class Persona:
     def find(cls, filter):
         """ Devuelve un cursor de modelos        
         """ 
+        bool_var = Persona.db.persona.find(filter).hasNext()
+        print(bool_var)
         return ModelCursor(Persona, Persona.db.persona.find(filter))
 
     @classmethod
@@ -188,6 +191,9 @@ if __name__ == '__main__':
     p1.save()
     p1.set(**{'telefono': 000000000})
     p1.save()
+    first_guy = Persona.find({"nombre": "Pablos"})
+    second_guy = first_guy.next()
+    print(second_guy._id)
 
     # a = 0
     # while a == 0:
