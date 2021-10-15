@@ -95,11 +95,12 @@ class Persona:
                 self.db.persona.update_one({"_id": self._id.inserted_id}, values)
                 print('Se ha actualizado correctamente.')
             else: #Significa que no existe
-                self.__dict__.pop('modified_vars')
-                dicc = self.__dict__.copy()
+                modified_vars_bckp = self.modified_vars #Se guardan variables cambiadas en una variable de funcion
+                del self.modified_vars #Se borra del diccionario del modelo las variables cambiadas
 
-                self._id = self.db.persona.insert_one(dicc)
+                self._id = self.db.persona.insert_one(self.__dict__)
                 print(self._id)
+                self.modified_vars = modified_vars_bckp #Se vuelve a guardar el diccionario de variables cambiadas en el Modelo
                 print('Registrado exitosamente.')
         except:
             print('Algo fallo en Persona.save()')
