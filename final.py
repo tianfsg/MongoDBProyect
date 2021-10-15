@@ -91,11 +91,14 @@ class Persona:
             #comprobar si existe en la bd.
             if hasattr(self,'_id'): #Significa que existe
                 print(self._id.inserted_id)
-                values = {"$set":self.modified_vars}
+                values = {"$set": self.modified_vars}
                 self.db.persona.update_one({"_id": self._id.inserted_id}, values)
                 print('Se ha actualizado correctamente.')
             else: #Significa que no existe
-                self._id = self.db.persona.insert_one(self.__dict__)
+                self.__dict__.pop('modified_vars')
+                dicc = self.__dict__.copy()
+
+                self._id = self.db.persona.insert_one(dicc)
                 print(self._id)
                 print('Registrado exitosamente.')
         except:
