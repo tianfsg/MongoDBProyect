@@ -1,5 +1,6 @@
 __author__ = 'Hao_Long_y_Sebastian_Gutierrez'
 
+import pymongo
 from pymongo import MongoClient
 
 def getCityGeoJSON(address):
@@ -63,9 +64,9 @@ class Persona:
     def __init__(self, **kwargs):  
 
         id_aux = None
-        if hasattr(self, '_id'):
-            id_aux = self.__dict__['_id']
-            self.__dict__.pop('_id')
+        if '_id' in kwargs:
+            id_aux = kwargs['_id']
+            kwargs.pop('_id')
 
         cont = 0
         for x in self.required_vars:
@@ -173,8 +174,11 @@ if __name__ == '__main__':
 
     p1 = Persona(**x)
     p1.save()
-    p1.set(**{'telefono':'655417214'})
+    p1.set(**{'telefono':'5000000'})
     p1.save()
+    cursor = Persona.find({'nombre': 'Sebas'})
+    print(cursor.next())
+
 
 
     
