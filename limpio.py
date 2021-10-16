@@ -1,6 +1,5 @@
 __author__ = 'Hao_Long_y_Sebastian_Gutierrez'
 
-import pymongo
 from pymongo import MongoClient
 
 def getCityGeoJSON(address):
@@ -171,16 +170,33 @@ if __name__ == '__main__':
     Persona.init_class(client['mongoproyect'])
 
     #TODO FALTA CREAR UNIQUE KEY AS _NIF && GeoJSON 
-    x = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
 
-    p1 = Persona(**x)
-    p1.save()
-    p1.set(**{'telefono':'5000000'})
-    p1.save()
-    cursor = Persona.find({'nombre': 'Sebas'})
-    print(cursor.next())
+    """
+        Pruebas de funcionamieto de Modelo.Persona() 
 
+            save() - Condicion (_id) ? update_one() : insert_one()
+            set(filter) - Modifies the actual object.
+            cursor - Gets the actual document.
+    """
 
+    # x = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
 
+    # p1 = Persona(**x)
+    # p1.save()
+    # p1.set(**{'telefono':'5000000'})
+    # p1.save()
+    # cursor = Persona.find({'nombre': 'Sebas'})
+    # print(cursor.next())
+
+    """
+        Pruebas de GeoJSON
+    """
     
+    
+    ubi = getCityGeoJSON('Champ de Mars, Paris, France')
+    print(ubi)
+
+
+
+
 
