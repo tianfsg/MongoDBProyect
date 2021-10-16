@@ -47,8 +47,13 @@ class ModelCursor:
     def alive(self):
         """True si existen más modelos por devolver, False en caso contrario
         """
+        try:
+            self.command_cursor.next()
+            return True
+        except:
+            return False
         
-        return self.command_cursor.hasNext()
+        
 
 class Persona:
     """ Prototipo de la clase modelo
@@ -138,8 +143,6 @@ class Persona:
     def find(cls, filter):
         """ Devuelve un cursor de modelos        
         """ 
-        bool_var = Persona.db.persona.find(filter).hasNext()
-        print(bool_var)
         return ModelCursor(Persona, Persona.db.persona.find(filter))
 
     @classmethod
