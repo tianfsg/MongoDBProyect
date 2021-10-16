@@ -1,0 +1,4 @@
+Q1 - db.json.aggregate([{$match: {ciudad:'Huelva'}}])
+Q2 = db.json.find({$or:[{'estudios.universidad':'UPM'},{'estudios.universidad':'UAM'}]})
+Q3 - db.persona.aggregate([{$group: {_id:"$ciudad"}}])
+Q6 - db.persona.aggregate([ {$match:{"trabajo.empresa":"UPM"}},{$group:{_id:"",avg_estudios:{$avg:{$size: "$estudios"}}}}])
