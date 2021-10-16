@@ -12,8 +12,10 @@ def getCityGeoJSON(address):
         (str) -- GeoJSON
     """
     from geopy.geocoders import Nominatim
-    geolocator = Nominatim()
+    geolocator = Nominatim(user_agent='Nosotros')
     location = geolocator.geocode(address)
+    return 'Latitud = {}, Longitud = {}'.format(location.latitude, location.longitude)
+
     #TODO
     # Devolver GeoJSON de tipo punto con la latitud y longitud almacenadas
     # en las variables location.latitude y location.longitude
@@ -158,6 +160,7 @@ class Persona:
         Persona.required_vars = required_vars
         Persona.admissible_vars = admissible_vars
         Persona.db = db
+        Persona.db.persona.create_index('nif', unique = True)
 
 
 # Q1: Listado de todas las compras de un cliente
@@ -171,17 +174,27 @@ if __name__ == '__main__':
     Persona.init_class(client['mongoproyect'])
 
     #TODO FALTA CREAR UNIQUE KEY AS _NIF && GeoJSON 
-    x = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
 
+    """
+        Pruebas de funcionamieto de Modelo.Persona() 
 
-    p1 = Persona(**x)
-    p1.save()
-    p1.set(**{'telefono':'5000000'})
-    p1.save()
-    cursor = Persona.find({'nombre': 'Sebas'})
-    print(cursor.next())
+            save() - Condicion (_id) ? update_one() : insert_one()
+            set(filter) - Modifies the actual object.
+            cursor - Gets the actual document.
+    """
 
+    # x = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
 
+    # p1 = Persona(**x)
+    # p1.save()
+    # p1.set(**{'telefono':'5000000'})
+    # p1.save()
+    # cursor = Persona.find({'nombre': 'Sebas'})
+    # print(cursor.next())
 
+    """
+        Pruebas de GeoJSON
+    """
     
-
+    ubi = getCityGeoJSON('Madrid')
+    print(ubi)
