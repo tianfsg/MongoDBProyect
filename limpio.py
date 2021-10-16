@@ -173,6 +173,7 @@ if __name__ == '__main__':
     #TODO FALTA CREAR UNIQUE KEY AS _NIF && GeoJSON 
     x = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
 
+
     p1 = Persona(**x)
     p1.save()
     p1.set(**{'telefono':'5000000'})
