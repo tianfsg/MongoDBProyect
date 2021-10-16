@@ -37,13 +37,17 @@ class ModelCursor:
         """ Devuelve el siguiente documento en forma de modelo
         """
         if ModelCursor.alive:
-            return self.model_class(self.command_cursor.next())
+            return self.model_class(**self.command_cursor.next())
 
     @property
     def alive(self):
         """True si existen más modelos por devolver, False en caso contrario
         """
-        return self.command_cursor.hasNext()
+        try:
+            self.command_cursor.next()
+            return True
+        except:
+            return False
 
 class Persona:
     """ Prototipo de la clase modelo
@@ -56,7 +60,13 @@ class Persona:
     admissible_vars = []
     db = None
 
-    def __init__(self, **kwargs):        
+    def __init__(self, **kwargs):  
+
+        id_aux = None
+        if hasattr(self, '_id'):
+            id_aux = self.__dict__['_id']
+            self.__dict__.pop('_id')
+
         cont = 0
         for x in self.required_vars:
             for i in kwargs:
@@ -65,7 +75,6 @@ class Persona:
 
         if cont == len(self.required_vars):
             all_vars = self.required_vars + self.admissible_vars
-            print('all(', all_vars,')')
             for x in kwargs:
                 for i in all_vars:
                     var_flag = False
@@ -75,50 +84,52 @@ class Persona:
             if var_flag == False:
                 raise Exception ('La key: ',x,' NO ES VALIDA.')
 
+        if id_aux != None:
+            self._id = id_aux
         self.__dict__.update(kwargs)
 
 
     def save(self):
         try:
             if hasattr(self, '_id'): #Significa que existe en la BD
-                values = {'$set': self.modifed_vars}
-                self.db.persona.update_one({'_id': self._id.inserted_id}) #DEBERIA SER EL NIF.
+                values = {'$set': self.mod}
+                self.db.persona.update_one({'_id': self._id.inserted_id}, values) #DEBERIA SER EL NIF.
                 print("\nSe ha actualizado correctamente.")
             else: #No existe en la BD
-                modified_vars_aux = self.modified_vars
-                del self.modified_vars
                 self._id = self.db.persona.insert_one(self.__dict__)
-                self.modified_vars = modified_vars_aux
                 print('Se ha registrado correctamente.')
         except:
             print('\n\nERR: Algo ha fallado en Persona.save()')
 
     def set(self, **kwargs):
 
+        id_aux = None
+        if hasattr(self, '_id'):
+            id_aux = self.__dict__['_id']
+            self.__dict__.pop('_id')
+
         curr = list(self.__dict__.keys())
         mod = list(kwargs.keys())
 
-        modified_vars_aux = self.modified_vars
-        all_vars = self.required_vars + self.admissible_vars
-
-        del self.modified_vars
-
-        for x in kwargs:
-            var_flag = False
-            print('DEBUG all(', all_vars[x],') && mod(', mod[x],')')
-            if all_vars[x] == mod[x]:
-                var_flag = True
-                break
+        #all_vars = self.required_vars + self.admissible_vars
+        var_flag = False
+        for x in curr:
+            for i in mod:
+                if x == i:
+                    var_flag = True
+                    break
         if var_flag == False:
-            raise Exception ('La key: ', mod[x], ' NO ES VALIDA.')
+            raise Exception ('La key: ', i, ' NO ES VALIDA.')
 
-        for x in mod:
-            if curr[x] == mod[x]:
-                self.__dict__[curr[x]] = kwargs[mod[x]]
-                modified_vars_aux.update({mod[x]: kwargs[mod[x]]})
-
-        self.modified_vars = modified_vars_aux
-    
+        for x in curr:
+            for i in mod:
+                if x == i:
+                    self.__dict__[x] = kwargs[i]
+                    self.mod = {x: kwargs[i]}
+                    
+        if id_aux != None:
+            self._id = id_aux
+ 
     @classmethod
     def find(cls, filter):
         """ Devuelve un cursor de modelos        
@@ -158,9 +169,11 @@ if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     Persona.init_class(client['mongoproyect'])
 
-    x = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': 6553984293,'nif': 'y7502011t'}
+    x = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
 
     p1 = Persona(**x)
+    p1.save()
+    p1.set(**{'telefono':'655417214'})
     p1.save()
 
 
