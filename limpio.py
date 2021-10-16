@@ -410,7 +410,7 @@ if __name__ == '__main__':
     centro = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
     empresa = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
 
-    p1 = Persona(**x)
+    p1 = Persona(**persona)
     p1.save()
     p1.set(**{'telefono':'5000000'})
     p1.save()
