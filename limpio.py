@@ -1,5 +1,6 @@
 __author__ = 'Hao_Long_y_Sebastian_Gutierrez'
 
+import pymongo
 from pymongo import MongoClient
 
 def getCityGeoJSON(address):
@@ -11,8 +12,10 @@ def getCityGeoJSON(address):
         (str) -- GeoJSON
     """
     from geopy.geocoders import Nominatim
-    geolocator = Nominatim()
+    geolocator = Nominatim(user_agent='Nosotros')
     location = geolocator.geocode(address)
+    return 'Latitud = {}, Longitud = {}'.format(location.latitude, location.longitude)
+
     #TODO
     # Devolver GeoJSON de tipo punto con la latitud y longitud almacenadas
     # en las variables location.latitude y location.longitude
@@ -157,6 +160,7 @@ class Persona:
         Persona.required_vars = required_vars
         Persona.admissible_vars = admissible_vars
         Persona.db = db
+        Persona.db.persona.create_index('nif', unique = True)
 
 
 # Q1: Listado de todas las compras de un cliente
@@ -192,9 +196,9 @@ if __name__ == '__main__':
         Pruebas de GeoJSON
     """
     
-    
-    ubi = getCityGeoJSON('Champ de Mars, Paris, France')
+    ubi = getCityGeoJSON('Madrid')
     print(ubi)
+
 
 
 
