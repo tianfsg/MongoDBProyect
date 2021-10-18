@@ -90,7 +90,6 @@ class Persona:
             self._id = id_aux
 
         kwargs['loc'] = getCityGeoJSON(kwargs['ciudad'])
-        print(kwargs['loc'])
         self.__dict__.update(kwargs)
 
 
@@ -104,8 +103,7 @@ class Persona:
                 self._id = self.db.persona.insert_one(self.__dict__)
                 print('Se ha registrado correctamente.')
         except Exception:
-            traceback.print_exc()
-            # print('\n\nERR: Algo ha fallado en Persona.save()')
+            print('\n\nERR: Algo ha fallado en Persona.save()')
 
     def set(self, **kwargs):
 
