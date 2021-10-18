@@ -14,7 +14,11 @@ def getCityGeoJSON(address):
     from geopy.geocoders import Nominatim
     geolocator = Nominatim(user_agent='Nosotros')
     location = geolocator.geocode(address)
-    return 'Latitud = {}, Longitud = {}'.format(location.latitude, location.longitude)
+    dict_loc = {'location':{
+        'type': 'Point',
+        'coordinates': [location.latitude,location.longitude]
+    }}
+    return dict_loc
     #TODO
     # Devolver GeoJSON de tipo punto con la latitud y longitud almacenadas
     # en las variables location.latitude y location.longitude
@@ -99,7 +103,9 @@ class Persona:
                 print("\nSe ha actualizado correctamente.")
             else: #No existe en la BD
                 loc = getCityGeoJSON(self.__dict__['ciudad'])
+                print('loc')
                 self.__dict__.update(loc)
+                print('update')
                 self._id = self.db.persona.insert_one(self.__dict__)
                 print('Se ha registrado correctamente.')
         except:
@@ -272,7 +278,6 @@ class Centro:
         Centro.db = db
         Centro.db.centro.create_index('', unique = True)
 
-
 class Empresa:
     """ Prototipo de la clase modelo
         Copiar y pegar tantas veces como modelos se deseen crear (cambiando
@@ -408,14 +413,14 @@ if __name__ == '__main__':
 
     p1 = Persona(**persona)
     p1.save()
-    p1.set(**{'telefono': '74837492'})
-    p1.save()
-    cursor = Persona.find({'nombre': 'Sebas'})
-    print(cursor.next().loc)
+    #p1.set(**{'telefono': '74837492'})
+    #p1.save()
+    #cursor = Persona.find({'nombre': 'Sebas'})
+    #print(cursor.next())
 
     """
         Pruebas de GeoJSON
     """
     
-    ubi = getCityGeoJSON('Madrid')
-    print(ubi)
+    #ubi = getCityGeoJSON('Madrid')
+    #print(ubi)
