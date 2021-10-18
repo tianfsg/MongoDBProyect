@@ -15,7 +15,6 @@ def getCityGeoJSON(address):
     geolocator = Nominatim(user_agent='Nosotros')
     location = geolocator.geocode(address)
     return 'Latitud = {}, Longitud = {}'.format(location.latitude, location.longitude)
-
     #TODO
     # Devolver GeoJSON de tipo punto con la latitud y longitud almacenadas
     # en las variables location.latitude y location.longitude
@@ -161,8 +160,7 @@ class Persona:
         Persona.admissible_vars = admissible_vars
         Persona.db = db
         Persona.db.persona.create_index('nif', unique = True)
-
-
+        Persona.db.persona.create_index([("localizacion", pymongo.GEOSPHERE)])
 
 class Centro:
     """ Prototipo de la clase modelo
@@ -263,14 +261,12 @@ class Centro:
             file = open(vars_path, 'r')
             content_file = file.read()
             nothing = content_file.split('\n')
-            required_vars = nothing[0].split(',')
-            admissible_vars = nothing[1].split(',')
+            required_vars = nothing.split(',')
             file.close()
         except:
             print('el fichero de vars no existe')
 
         Centro.required_vars = required_vars
-        Centro.admissible_vars = admissible_vars
         Centro.db = db
         Centro.db.centro.create_index('', unique = True)
 
@@ -374,14 +370,12 @@ class Empresa:
             file = open(vars_path, 'r')
             content_file = file.read()
             nothing = content_file.split('\n')
-            required_vars = nothing[0].split(',')
-            admissible_vars = nothing[1].split(',')
+            required_vars = nothing.split(',')
             file.close()
         except:
             print('el fichero de vars no existe')
 
         Empresa.required_vars = required_vars
-        Empresa.admissible_vars = admissible_vars
         Empresa.db = db
         Empresa.db.empresa.create_index('', unique = True)
 
