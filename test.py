@@ -1,5 +1,0 @@
-file = open('personas.txt', 'r')
-mensaje = file.read()
-x = list(mensaje)
-print(x)
-file.close()
