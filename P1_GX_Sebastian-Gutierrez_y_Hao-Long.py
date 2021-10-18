@@ -387,13 +387,13 @@ nombre = 'Definir'
     <QUERIES>
 """
 
-# Q1 = [{'$match': {'ciudad':'Huelva'}}]
-# Q2 = [{'$match': {'estudios.universidad': {'$in': ['UAM', 'UPM']}}}]
-# Q3 = [{'$group': {'_id':"$ciudad"}}]
-# Q4 = [{'$geoNear':{'near': {'type':'Point', 'coordinates': [ 40.4167047, -3.7035825 ]}, 'distanceField': 'dist.calculated', 'maxDistance': '700000', 'includeLocs':'dist.locstion', 'spherical': 'true'}}, {'$sort':{'dist.calculated': 1}}, {'$limit': 10}]
-# Q5 = [{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]
-# Q6 = [{'$match':{"trabajo.empresa":"UPM"}},{'$group':{'_id':"",'avg_estudios':{'$avg':{'$size': "$estudios"}}}}]
-# Q7 = [{'$unwind':"$estudios"}, {'$group':{'_id':"$estudios.universidad", 'count': {'$sum': 1}}}, {'$sort':{'count': -1}}, {'$limit': 3}]
+    # Q1 = [{'$match': {'ciudad':'Huelva'}}]
+    # Q2 = [{'$match': {'estudios.universidad': {'$in': ['UAM', 'UPM']}}}]
+    # Q3 = [{'$group': {'_id':"$ciudad"}}]
+    # Q4 = [{'$geoNear':{'near': {'type':'Point', 'coordinates': [ 40.4167047, -3.7035825 ]}, 'distanceField': 'dist.calculated', 'maxDistance': '700000', 'includeLocs':'dist.locstion', 'spherical': 'true'}}, {'$sort':{'dist.calculated': 1}}, {'$limit': 10}]
+    # Q5 = [{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]
+    # Q6 = [{'$match':{"trabajo.empresa":"UPM"}},{'$group':{'_id':"",'avg_estudios':{'$avg':{'$size': "$estudios"}}}}]
+    # Q7 = [{'$unwind':"$estudios"}, {'$group':{'_id':"$estudios.universidad", 'count': {'$sum': 1}}}, {'$sort':{'count': -1}}, {'$limit': 3}]
 
 
 if __name__ == '__main__':
