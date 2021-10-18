@@ -1,7 +1,7 @@
 __author__ = 'Hao_Long_y_Sebastian_Gutierrez'
 
-import pymongo
-from pymongo import MongoClient
+import pymongo,traceback
+from pymongo import MongoClient, GEO2D
 
 def getCityGeoJSON(address):
     """ Devuelve las coordenadas de una direcciion a partir de un str de la direccion
@@ -13,12 +13,8 @@ def getCityGeoJSON(address):
     """
     from geopy.geocoders import Nominatim
     geolocator = Nominatim(user_agent='Nosotros')
-    location = geolocator.geocode(address)
-    dict_loc = {'location':{
-        'type': 'Point',
-        'coordinates': [location.latitude,location.longitude]
-    }}
-    return dict_loc
+    location = geolocator.geocode(address).point
+    return [location.latitude, location.longitude]
     #TODO
     # Devolver GeoJSON de tipo punto con la latitud y longitud almacenadas
     # en las variables location.latitude y location.longitude
@@ -92,6 +88,9 @@ class Persona:
 
         if id_aux != None:
             self._id = id_aux
+
+        kwargs['loc'] = getCityGeoJSON(kwargs['ciudad'])
+        print(kwargs['loc'])
         self.__dict__.update(kwargs)
 
 
@@ -102,14 +101,11 @@ class Persona:
                 self.db.persona.update_one({'_id': self._id.inserted_id}, values) #DEBERIA SER EL NIF.
                 print("\nSe ha actualizado correctamente.")
             else: #No existe en la BD
-                loc = getCityGeoJSON(self.__dict__['ciudad'])
-                print('loc')
-                self.__dict__.update(loc)
-                print('update')
                 self._id = self.db.persona.insert_one(self.__dict__)
                 print('Se ha registrado correctamente.')
-        except:
-            print('\n\nERR: Algo ha fallado en Persona.save()')
+        except Exception:
+            traceback.print_exc()
+            # print('\n\nERR: Algo ha fallado en Persona.save()')
 
     def set(self, **kwargs):
 
@@ -388,9 +384,14 @@ class Empresa:
 
 # Q1: Listado de todas las compras de un cliente
 nombre = "Definir"
-Q1 = []
+Q1 = [{'$match': {'ciudad':'Huelva'}}]
+Q2 = [{'$match': {'estudios.universidad': {'$in': ['UAM', 'UPM']}}}]
+Q3 = [{'$group': {'_id':"$ciudad"}}]
+Q4 = []
+Q5 = [[{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]]
+Q6 = [{'$match':{"trabajo.empresa":"UPM"}},{'$group':{'_id':"",'avg_estudios':{'$avg':{'$size': "$estudios"}}}}]
+Q7 = [{'$unwind':"$estudios"}, {'$group':{'_id':"$estudios.universidad", 'count': {'$sum': 1}}}, {'$sort':{'count': -1}}, {'$limit': 3}]
 
-# Q2: etc...
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
@@ -422,5 +423,5 @@ if __name__ == '__main__':
         Pruebas de GeoJSON
     """
     
-    #ubi = getCityGeoJSON('Madrid')
-    #print(ubi)
+    # ubi = getCityGeoJSON('Madrid')
+    # print(ubi)
