@@ -15,7 +15,6 @@ def getCityGeoJSON(address):
     geolocator = Nominatim(user_agent='Nosotros')
     location = geolocator.geocode(address).point
     return [location.latitude, location.longitude]
-    #TODO
     # Devolver GeoJSON de tipo punto con la latitud y longitud almacenadas
     # en las variables location.latitude y location.longitude
 
@@ -97,7 +96,7 @@ class Persona:
         try:
             if hasattr(self, '_id'): #Significa que existe en la BD
                 values = {'$set': self.mod}
-                self.db.persona.update_one({'_id': self._id.inserted_id}, values) #DEBERIA SER EL NIF.
+                self.db.persona.update_one({'_id': self._id.inserted_id}, values)
                 print("\nSe ha actualizado correctamente.")
             else: #No existe en la BD
                 self._id = self.db.persona.insert_one(self.__dict__)
@@ -214,7 +213,7 @@ class Centro:
                 self._id = self.db.centro.insert_one(self.__dict__)
                 print('Se ha registrado correctamente.')
         except:
-            print('\n\nERR: Algo ha fallado en Persona.save()')
+            print('\n\nERR: Algo ha fallado en Centro.save()')
 
     def set(self, **kwargs):
 
@@ -322,7 +321,7 @@ class Empresa:
                 self._id = self.db.empresa.insert_one(self.__dict__)
                 print('Se ha registrado correctamente.')
         except:
-            print('\n\nERR: Algo ha fallado en Persona.save()')
+            print('\n\nERR: Algo ha fallado en Empresa.save()')
 
     def set(self, **kwargs):
 
@@ -387,21 +386,18 @@ nombre = 'Definir'
     <QUERIES>
 """
 
-    # Q1 = [{'$match': {'ciudad':'Huelva'}}]
-    # Q2 = [{'$match': {'estudios.universidad': {'$in': ['UAM', 'UPM']}}}]
-    # Q3 = [{'$group': {'_id':"$ciudad"}}]
-    # Q4 = [{'$geoNear':{'near': {'type':'Point', 'coordinates': [ 40.4167047, -3.7035825 ]}, 'distanceField': 'dist.calculated', 'maxDistance': '700000', 'includeLocs':'dist.locstion', 'spherical': 'true'}}, {'$sort':{'dist.calculated': 1}}, {'$limit': 10}]
-    # Q5 = [{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]
-    # Q6 = [{'$match':{"trabajo.empresa":"UPM"}},{'$group':{'_id':"",'avg_estudios':{'$avg':{'$size': "$estudios"}}}}]
-    # Q7 = [{'$unwind':"$estudios"}, {'$group':{'_id':"$estudios.universidad", 'count': {'$sum': 1}}}, {'$sort':{'count': -1}}, {'$limit': 3}]
+Q1 = [{'$match': {'ciudad':'Huelva'}}]
+Q2 = [{'$match': {'estudios.universidad': {'$in': ['UAM', 'UPM']}}}]
+Q3 = [{'$group': {'_id':"$ciudad"}}]
+Q4 = [{'$geoNear':{'near': {'type':'Point', 'coordinates': [ 40.4167047, -3.7035825 ]}, 'distanceField': 'dist.calculated', 'maxDistance': '700000', 'includeLocs':'dist.locstion', 'spherical': 'true'}}, {'$sort':{'dist.calculated': 1}}, {'$limit': 10}]
+Q5 = [{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]
+Q6 = [{'$match':{"trabajo.empresa":"UPM"}},{'$group':{'_id':"",'avg_estudios':{'$avg':{'$size': "$estudios"}}}}]
+Q7 = [{'$unwind':"$estudios"}, {'$group':{'_id':"$estudios.universidad", 'count': {'$sum': 1}}}, {'$sort':{'count': -1}}, {'$limit': 3}]
 
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     Persona.init_class(client['mongoproyect'])
-
-    #TODO FALTA CREAR EL POINT y MANDAR UNIQUE KEY DE 2dSPHERE, TERMINAR Q4, Q5, Q7
-    # Y ANIDAR LAS LATITUDES Y LONGITUDES.
 
     """
         Pruebas de funcionamieto de Modelo() 
@@ -428,3 +424,7 @@ if __name__ == '__main__':
     
     # ubi = getCityGeoJSON('Madrid')
     # print(ubi)
+#TODO Pasar las queries por aggregate de pymongo
+#TODO poner una linea que importe redES JSON
+#TODO Poner lineas que prueben el constructor, save, set, y next de todos los modelos
+#TODO debug final
