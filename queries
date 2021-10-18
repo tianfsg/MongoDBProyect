@@ -1,5 +1,7 @@
 Q1 - db.json.aggregate([{$match: {ciudad:'Huelva'}}])
 Q2 = db.json.find({$or:[{'estudios.universidad':'UPM'},{'estudios.universidad':'UAM'}]})
 Q3 - db.persona.aggregate([{$group: {_id:"$ciudad"}}])
+Q4 = db.persona.aggregate([{$geoNear:{near: {type:'Point', coordinates: [ 40.4167047, -3.7035825 ]}, distanceField: 'dist.calculated', maxDistance: 700000, includeLocs:'dist.locstion', spherical:true}}, {$sort:{'dist.calculated': 1}}, {$limit: 10}])
+Q5 = db.persona.aggregate([{$unwind:"$estudios"}, {$match:{$expr:{$gte:[{$dateFromString:{dateString: "$estudios.final", format: "%d/%m/%Y"}}, ISODate("2017-01-01T00:00:00Z")]}}},{$group:{_id: "$_id", nombre:{$first: "$nombre.nombre"}, apellido:{$first: "$nombre.apellido"}, fechaFinal:{$first:"$estudios.final"}}},{$out: {db: "mongoproyect2", coll: "after2017"}}])
 Q6 - db.persona.aggregate([ {$match:{"trabajo.empresa":"UPM"}},{$group:{_id:"",avg_estudios:{$avg:{$size: "$estudios"}}}}])
 Q7 = db.persona.aggregate([{$unwind:"$estudios"}, {$group:{_id:"$estudios.universidad", count: {$sum: 1}}}, {$sort:{count: -1}}, {$limit: 3}])
