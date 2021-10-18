@@ -98,6 +98,8 @@ class Persona:
                 self.db.persona.update_one({'_id': self._id.inserted_id}, values) #DEBERIA SER EL NIF.
                 print("\nSe ha actualizado correctamente.")
             else: #No existe en la BD
+                loc = getCityGeoJSON(self.__dict__['ciudad'])
+                self.__dict__.update(loc)
                 self._id = self.db.persona.insert_one(self.__dict__)
                 print('Se ha registrado correctamente.')
         except:
@@ -160,7 +162,7 @@ class Persona:
         Persona.admissible_vars = admissible_vars
         Persona.db = db
         Persona.db.persona.create_index('nif', unique = True)
-        Persona.db.persona.create_index([("localizacion", pymongo.GEOSPHERE)])
+        Persona.db.persona.create_index([("loc", pymongo.GEOSPHERE)])
 
 class Centro:
     """ Prototipo de la clase modelo
@@ -400,16 +402,16 @@ if __name__ == '__main__':
             cursor - Gets the actual document.
     """
 
-    persona = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
+    persona = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t', 'ciudad':'Caracas'}
     centro = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
     empresa = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
 
     p1 = Persona(**persona)
     p1.save()
-    p1.set(**{'telefono':'5000000'})
+    p1.set(**{'telefono': '74837492'})
     p1.save()
     cursor = Persona.find({'nombre': 'Sebas'})
-    print(cursor.next())
+    print(cursor.next().loc)
 
     """
         Pruebas de GeoJSON

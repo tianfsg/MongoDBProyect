@@ -1,2 +1,2 @@
-nombre,apellido,nif
+nombre,apellido,nif,ciudad
 edad,centro,telefono
