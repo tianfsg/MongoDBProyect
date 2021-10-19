@@ -423,7 +423,7 @@ nombre = 'Definir'
 Q1 = [{'$match': {'ciudad':'Huelva'}}]
 Q2 = [{'$match': {'estudios.universidad': {'$in': ['UAM', 'UPM']}}}]
 Q3 = [{'$group': {'_id':"$ciudad"}}]
-Q4 = [{'$geoNear':{'near': {'type':'Point', 'coordinates': [ 40.4167047, -3.7035825 ]}, 'distanceField': 'dist.calculated', 'maxDistance': '700000', 'includeLocs':'dist.locstion', 'spherical': 'true'}}, {'$sort':{'dist.calculated': 1}}, {'$limit': 10}]
+Q4 = [{'$geoNear':{'near': {'type':'Point', 'coordinates': [ 40.4167047, -3.7035825 ]}, 'distanceField': 'dist.calculated', 'maxDistance': 700000, 'includeLocs':'dist.locstion', 'spherical': 'true'}}, {'$sort':{'dist.calculated': 1}}, {'$limit': 10}]
 dateStr = "2017-01-01T00:00:00Z"
 myDatetime = dateutil.parser.parse(dateStr)
 Q5 = [{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': "%d/%m/%Y"}}, myDatetime]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]
@@ -475,7 +475,7 @@ if __name__ == '__main__':
     e1.save()
     e1.set(**{'nombre': 'Universidad de Tecnologia y Arte Digital'})
     e1.save()
-    cursor3 = Persona.find({'nombre': 'Universidad de Tecnologia y Arte Digital'})
+    cursor3 = Empresa.find({'nombre': 'Universidad de Tecnologia y Arte Digital'})
     print(cursor3.next())
 
     """
