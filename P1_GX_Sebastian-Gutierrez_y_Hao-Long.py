@@ -489,29 +489,34 @@ if __name__ == '__main__':
         Aggregate con pipelines
     """
     A1 = collection_persona.aggregate(Q1)
+    print("\nAgregate 1\n")
     print(list(A1))
 
     A2 = collection_persona.aggregate(Q2)
+    print("\nAgregate2\n")
     print(list(A2))
 
     A3 = collection_persona.aggregate(Q3)
+    print("\nAgregate3\n")
     print(list(A3))
 
     A4 = client['mongoproyect'].persona.aggregate(Q4)
+    print("\nAgregate4\n")
     print(list(A4))
 
     A5 = collection_persona.aggregate(Q5)
-    print(list(A5))
+    print("\nAgregate5\n")
     for x in json_db.after2017.find():
         print(x)
 
     A6 = collection_persona.aggregate(Q6)
+    print("\nAgregate6\n")
     print(list(A6))
 
     A7 = collection_persona.aggregate(Q7)
+    print("\nAgregate7\n")
     print(list(A7))
 
-#TODO Comprobar si funcionan las queries cambiadas
-#TODO Arreglar ModelCursor, el alive ha dejado de funcionar
+#TODO Ver que pasa con Persona cuando hay algo en BBDD "Probablemente sea cosa del NIF"
 #TODO Que se actualize 'loc' en el SET
 #TODO debug final
