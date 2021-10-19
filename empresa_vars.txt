@@ -1,1 +1,2 @@
-empresa,localizacion
+nombre,localizacion
+CEO

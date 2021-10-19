@@ -1,6 +1,8 @@
 __author__ = 'Hao_Long_y_Sebastian_Gutierrez'
 
 import pymongo
+import json
+import datetime
 from pymongo import MongoClient
 
 def getCityGeoJSON(address):
@@ -64,9 +66,13 @@ class Persona:
     def __init__(self, **kwargs):  
 
         id_aux = None
+        loc_aux = None
         if '_id' in kwargs:
             id_aux = kwargs['_id']
             kwargs.pop('_id')
+        if 'loc' in kwargs:
+            loc_aux = kwargs['loc']
+            kwargs.pop('loc')
 
         cont = 0
         for x in self.required_vars:
@@ -87,6 +93,9 @@ class Persona:
 
         if id_aux != None:
             self._id = id_aux
+
+        if loc_aux != None:
+            self.loc = loc_aux
 
         kwargs['loc'] = getCityGeoJSON(kwargs['ciudad'])
         self.__dict__.update(kwargs)
@@ -177,9 +186,14 @@ class Centro:
     def __init__(self, **kwargs):  
 
         id_aux = None
+        loc_aux = None
         if '_id' in kwargs:
             id_aux = kwargs['_id']
             kwargs.pop('_id')
+
+        if 'loc' in kwargs:
+            loc_aux = kwargs['loc']
+            kwargs.pop('loc')
 
         cont = 0
         for x in self.required_vars:
@@ -200,6 +214,11 @@ class Centro:
 
         if id_aux != None:
             self._id = id_aux
+
+        if loc_aux != None:
+            self.loc = loc_aux
+        
+        kwargs['loc'] = getCityGeoJSON(kwargs['localizacion'])
         self.__dict__.update(kwargs)
 
 
@@ -262,14 +281,16 @@ class Centro:
             file = open(vars_path, 'r')
             content_file = file.read()
             nothing = content_file.split('\n')
-            required_vars = nothing.split(',')
+            required_vars = nothing[0].split(',')
+            admissible_vars = nothing[1].split(',')
             file.close()
         except:
             print('el fichero de vars no existe')
 
         Centro.required_vars = required_vars
+        Centro.admissible_vars = admissible_vars
         Centro.db = db
-        Centro.db.centro.create_index('', unique = True)
+        #Centro.db.centro.create_index('', unique = True)
 
 class Empresa:
     """ Prototipo de la clase modelo
@@ -285,9 +306,14 @@ class Empresa:
     def __init__(self, **kwargs):  
 
         id_aux = None
+        loc_aux = None
         if '_id' in kwargs:
             id_aux = kwargs['_id']
             kwargs.pop('_id')
+
+        if 'loc' in kwargs:
+            loc_aux = kwargs['loc']
+            kwargs.pop('loc')
 
         cont = 0
         for x in self.required_vars:
@@ -308,6 +334,11 @@ class Empresa:
 
         if id_aux != None:
             self._id = id_aux
+
+        if loc_aux != None:
+            self.loc = loc_aux
+
+        kwargs['loc'] = getCityGeoJSON(kwargs['localizacion'])
         self.__dict__.update(kwargs)
 
 
@@ -370,14 +401,16 @@ class Empresa:
             file = open(vars_path, 'r')
             content_file = file.read()
             nothing = content_file.split('\n')
-            required_vars = nothing.split(',')
+            required_vars = nothing[0].split(',')
+            admissible_vars = nothing[1].split(',')
             file.close()
         except:
             print('el fichero de vars no existe')
 
         Empresa.required_vars = required_vars
+        Empresa.admissible_vars = admissible_vars
         Empresa.db = db
-        Empresa.db.empresa.create_index('', unique = True)
+        #Empresa.db.empresa.create_index('', unique = True)
 
 
 nombre = 'Definir'
@@ -390,7 +423,7 @@ Q1 = [{'$match': {'ciudad':'Huelva'}}]
 Q2 = [{'$match': {'estudios.universidad': {'$in': ['UAM', 'UPM']}}}]
 Q3 = [{'$group': {'_id':"$ciudad"}}]
 Q4 = [{'$geoNear':{'near': {'type':'Point', 'coordinates': [ 40.4167047, -3.7035825 ]}, 'distanceField': 'dist.calculated', 'maxDistance': '700000', 'includeLocs':'dist.locstion', 'spherical': 'true'}}, {'$sort':{'dist.calculated': 1}}, {'$limit': 10}]
-Q5 = [{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]
+#Q5 = [{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]
 Q6 = [{'$match':{"trabajo.empresa":"UPM"}},{'$group':{'_id':"",'avg_estudios':{'$avg':{'$size': "$estudios"}}}}]
 Q7 = [{'$unwind':"$estudios"}, {'$group':{'_id':"$estudios.universidad", 'count': {'$sum': 1}}}, {'$sort':{'count': -1}}, {'$limit': 3}]
 
@@ -398,6 +431,40 @@ Q7 = [{'$unwind':"$estudios"}, {'$group':{'_id':"$estudios.universidad", 'count'
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     Persona.init_class(client['mongoproyect'])
+    Empresa.init_class(client['mongoproyect'])
+    Centro.init_class(client['mongoproyect'])
+
+    json_db = client['mongoproyect2']
+    collection_persona = json_db['persona']
+    with open('redES.json') as f:
+        file_data = json.load(f)
+    collection_persona.insert_many(file_data)
+
+    """
+        Aggregate con pipelines
+    """
+    A1 = collection_persona.aggregate(Q1)
+    print(list(A1))
+
+    A2 = collection_persona.aggregate(Q2)
+    print(list(A2))
+
+    A3 = collection_persona.aggregate(Q3)
+    print(list(A3))
+
+    #A4 = collection_persona.aggregate(Q4)
+    #print(list(A4))
+
+    #A5 = collection_persona.aggregate([{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}])
+    #print(list(A5))
+    #for x in json_db.after2017.find():
+    #    print(x)
+
+    A6 = collection_persona.aggregate(Q6)
+    print(list(A6))
+
+    A7 = collection_persona.aggregate(Q7)
+    print(list(A7))
 
     """
         Pruebas de funcionamieto de Modelo() 
@@ -408,15 +475,29 @@ if __name__ == '__main__':
     """
 
     persona = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'eiror3iri', 'ciudad':'A Coruña'}
-    centro = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
-    empresa = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'y7502011t'}
+    centro = {'nombre': 'UPM', 'localizacion': 'Vallecas'}
+    empresa = {'nombre': 'U-tad', 'localizacion': 'Las Matas'}
 
     p1 = Persona(**persona)
     p1.save()
-    #p1.set(**{'telefono': '74837492'})
-    #p1.save()
-    #cursor = Persona.find({'nombre': 'Sebas'})
-    #print(cursor.next())
+    p1.set(**{'telefono': '74837492'})
+    p1.save()
+    cursor = Persona.find({'nombre': 'Sebas'})
+    print(cursor.next())
+
+    c1 = Centro(**centro)
+    c1.save()
+    c1.set(**{'nombre': 'Universidad Politecnica de Madrid'})
+    c1.save()
+    cursor2 = Centro.find({'nombre': 'Universidad Politecnica Madrid'})
+    print(cursor2.next())
+
+    e1 = Empresa(**empresa)
+    e1.save()
+    e1.set(**{'nombre': 'Universidad de Tecnologia y Arte Digital'})
+    e1.save()
+    cursor3 = Persona.find({'nombre': 'Universidad de Tecnologia y Arte Digital'})
+    print(cursor3.next())
 
     """
         Pruebas de GeoJSON
@@ -424,7 +505,8 @@ if __name__ == '__main__':
     
     # ubi = getCityGeoJSON('Madrid')
     # print(ubi)
-#TODO Pasar las queries por aggregate de pymongo
-#TODO poner una linea que importe redES JSON
-#TODO Poner lineas que prueben el constructor, save, set, y next de todos los modelos
+#TODO Arreglar la Q4 y la Q5
+    #Q4 tiene problemas de tipo
+    #Q5 no pasa bien los '%' del formato de las fechas
+#TODO Arreglar ModelCursor, el next ha dejado de funcionar
 #TODO debug final
