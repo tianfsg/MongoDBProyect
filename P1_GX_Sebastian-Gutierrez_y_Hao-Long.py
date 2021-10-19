@@ -1,5 +1,6 @@
 __author__ = 'Hao_Long_y_Sebastian_Gutierrez'
 
+import json
 from dateutil import parser
 from pymongo import MongoClient, GEOSPHERE
 
@@ -114,6 +115,7 @@ class Persona:
     def set(self, **kwargs):
 
         id_aux = None
+        self.mod = {}
         if hasattr(self, '_id'):
             id_aux = self.__dict__['_id']
             self.__dict__.pop('_id')
@@ -137,9 +139,8 @@ class Persona:
                     if i == 'ciudad':
                         self.__dict__['loc'] = getCityGeoJSON(kwargs[i])
                         self.mod = {'loc': self.__dict__['loc']}
-
                     self.__dict__[x] = kwargs[i]
-                    self.mod = {x: kwargs[i]}
+                    self.mod[x] = kwargs[i]
                     
         if id_aux != None:
             self._id = id_aux
@@ -239,6 +240,8 @@ class Centro:
     def set(self, **kwargs):
 
         id_aux = None
+        self.mod = {}
+
         if hasattr(self, '_id'):
             id_aux = self.__dict__['_id']
             self.__dict__.pop('_id')
@@ -259,8 +262,11 @@ class Centro:
         for x in curr:
             for i in mod:
                 if x == i:
+                    if i == 'localizacion':
+                        self.__dict__['loc'] = getCityGeoJSON(kwargs[i])
+                        self.mod = {'loc': self.__dict__['loc']}
                     self.__dict__[x] = kwargs[i]
-                    self.mod = {x: kwargs[i]}
+                    self.mod[x] = kwargs[i]
                     
         if id_aux != None:
             self._id = id_aux
@@ -359,6 +365,8 @@ class Empresa:
     def set(self, **kwargs):
 
         id_aux = None
+        self.mod = {}
+
         if hasattr(self, '_id'):
             id_aux = self.__dict__['_id']
             self.__dict__.pop('_id')
@@ -379,8 +387,11 @@ class Empresa:
         for x in curr:
             for i in mod:
                 if x == i:
+                    if i == 'localizacion':
+                        self.__dict__['loc'] = getCityGeoJSON(kwargs[i])
+                        self.mod = {'loc': self.__dict__['loc']}
                     self.__dict__[x] = kwargs[i]
-                    self.mod = {x: kwargs[i]}
+                    self.mod[x] = kwargs[i]
                     
         if id_aux != None:
             self._id = id_aux
@@ -438,45 +449,90 @@ if __name__ == '__main__':
     Empresa.init_class(client['mongoproyect'])
     Centro.init_class(client['mongoproyect'])
 
-    # json_db = client['mongoproyect2']
-    # collection_persona = json_db['persona']
-    # with open('redES.json') as f:
-    #     file_data = json.load(f)
-    # collection_persona.insert_many(file_data)
+    json_db = client['mongoproyect2']
+    collection_persona = json_db['persona']
+    with open('redES.json') as f:
+        file_data = json.load(f)
+    collection_persona.insert_many(file_data)
+
 
 
     """
         Pruebas de funcionamieto de Modelo() 
-
             save() - Condicion (_id) ? update_one() : insert_one()
             set(filter) - Modifies the actual object.
             cursor - Gets the actual document.
     """
 
-    persona = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'eiror3iri', 'ciudad':'A Coruña'}
+    persona1 = {'nombre': 'Sebas', 'apellido': 'Guti', 'telefono': '655408703','nif': 'eiror3iri', 'ciudad':'A Coruña'}
+    persona2 = {'nombre': 'Hao', 'apellido': 'Liu', 'telefono': '655408203','nif': '200000000', 'ciudad':'Madrid'}
+    persona3 = {'nombre': 'Jose', 'apellido': 'Garcia', 'telefono': '655208703','nif': '300000000', 'ciudad':'Segovia'}
+    persona4 = {'nombre': 'Sofia', 'apellido': 'Perez', 'telefono': '655448703','nif': '400000000', 'ciudad':'Zaragoza'}
+    persona5 = {'nombre': 'Pedro', 'apellido': 'Encinas', 'telefono': '651348703','nif': '500000000', 'ciudad':'Alicante'}
+    persona6 = {'nombre': 'Laura', 'apellido': 'Mezo', 'telefono': '605402703','nif': '600000000', 'ciudad':'Santander'}
+    persona7 = {'nombre': 'Maria', 'apellido': 'Luengo', 'telefono': '651406703','nif': '700000000', 'ciudad':'Canarias'}
+    persona8 = {'nombre': 'Luis', 'apellido': 'Lopez', 'telefono': '655094703','nif': '800000000', 'ciudad':'Bilbao'}
+    persona9 = {'nombre': 'Juan', 'apellido': 'Garcia', 'telefono': '651057703','nif': '900000000', 'ciudad':'Albacete'}
+    persona10 = {'nombre': 'Carlos', 'apellido': 'Alvarez', 'telefono': '650728703','nif': '110000000', 'ciudad':'Valencia'}
+    persona11 = {'nombre': 'Julia', 'apellido': 'Matamala', 'telefono': '780408703','nif': '120000000', 'ciudad':'Valladolid'}
+
     centro = {'nombre': 'UPM', 'localizacion': 'Vallecas'}
     empresa = {'nombre': 'U-tad', 'localizacion': 'Las Matas'}
 
-    p1 = Persona(**persona)
+    """
+    Creacion de personas
+    """
+    p1 = Persona(**persona1)
     p1.save()
-    p1.set(**{'ciudad': 'Zaragoza'})
+
+    p2 = Persona(**persona2)
+    p2.save()
+
+    p3 = Persona(**persona3)
+    p3.save()
+
+    p4 = Persona(**persona4)
+    p4.save()
+
+    p5 = Persona(**persona5)
+    p5.save()
+
+    p6 = Persona(**persona6)
+    p6.save()
+
+    p7 = Persona(**persona7)
+    p7.save()
+
+    p8 = Persona(**persona8)
+    p8.save()
+
+    p9 = Persona(**persona9)
+    p9.save()
+
+    p10 = Persona(**persona10)
+    p10.save()
+
+    p11 = Persona(**persona11)
+    p11.save()
+
+    p1.set(**{'ciudad': 'Asturias'})
     p1.save()
-    # cursor = Persona.find({'nombre': 'Sebas'})
-    # print(cursor.next())
+    cursor = Persona.find({'nombre': 'Sebas'})
+    print(cursor.next())
 
-    # c1 = Centro(**centro)
-    # c1.save()
-    # c1.set(**{'nombre': 'Universidad Politecnica de Madrid'})
-    # c1.save()
-    # cursor2 = Centro.find({'nombre': 'Universidad Politecnica de Madrid'})
-    # print(cursor2.next())
+    c1 = Centro(**centro)
+    c1.save()
+    c1.set(**{'nombre': 'Universidad Politecnica de Madrid'})
+    c1.save()
+    cursor2 = Centro.find({'nombre': 'Universidad Politecnica de Madrid'})
+    print(cursor2.next())
 
-    # e1 = Empresa(**empresa)
-    # e1.save()
-    # e1.set(**{'nombre': 'Universidad de Tecnologia y Arte Digital'})
-    # e1.save()
-    # cursor3 = Persona.find({'nombre': 'Universidad de Tecnologia y Arte Digital'})
-    # print(cursor3.next())
+    e1 = Empresa(**empresa)
+    e1.save()
+    e1.set(**{'nombre': 'Universidad de Tecnologia y Arte Digital'})
+    e1.save()
+    cursor3 = Empresa.find({'nombre': 'Universidad de Tecnologia y Arte Digital'})
+    print(cursor3.next())
 
     """
         Pruebas de GeoJSON
@@ -488,35 +544,31 @@ if __name__ == '__main__':
     """
         Aggregate con pipelines
     """
-    # A1 = collection_persona.aggregate(Q1)
-    # print("\nAgregate 1\n")
-    # print(list(A1))
+    A1 = collection_persona.aggregate(Q1)
+    print("\nAgregate 1\n")
+    print(list(A1))
 
-    # A2 = collection_persona.aggregate(Q2)
-    # print("\nAgregate2\n")
-    # print(list(A2))
+    A2 = collection_persona.aggregate(Q2)
+    print("\nAgregate2\n")
+    print(list(A2))
 
-    # A3 = collection_persona.aggregate(Q3)
-    # print("\nAgregate3\n")
-    # print(list(A3))
+    A3 = collection_persona.aggregate(Q3)
+    print("\nAgregate3\n")
+    print(list(A3))
 
-    # A4 = client['mongoproyect'].persona.aggregate(Q4)
-    # print("\nAgregate4\n")
-    # print(list(A4))
+    A4 = client['mongoproyect'].persona.aggregate(Q4)
+    print("\nAgregate4\n")
+    print(list(A4))
 
-    # A5 = collection_persona.aggregate(Q5)
-    # print("\nAgregate5\n")
-    # for x in json_db.after2017.find():
-    #     print(x)
+    A5 = collection_persona.aggregate(Q5)
+    print("\nAgregate5\n")
+    for x in json_db.after2017.find():
+        print(x)
 
-    # A6 = collection_persona.aggregate(Q6)
-    # print("\nAgregate6\n")
-    # print(list(A6))
+    A6 = collection_persona.aggregate(Q6)
+    print("\nAgregate6\n")
+    print(list(A6))
 
-    # A7 = collection_persona.aggregate(Q7)
-    # print("\nAgregate7\n")
-    # print(list(A7))
-
-#TODO Ver que pasa con Persona cuando hay algo en BBDD "Probablemente sea cosa del NIF"
-#TODO Que se actualize 'loc' en el SET
-#TODO debug final
+    A7 = collection_persona.aggregate(Q7)
+    print("\nAgregate7\n")
+    print(list(A7))
