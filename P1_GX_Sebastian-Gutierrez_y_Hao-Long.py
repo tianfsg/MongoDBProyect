@@ -462,7 +462,7 @@ if __name__ == '__main__':
 
     p1 = Persona(**persona)
     p1.save()
-    p1.set(**{'ciudad': 'Marseille'})
+    p1.set(**{'ciudad': 'Zaragoza'})
     # p1.save()
     # cursor = Persona.find({'nombre': 'Sebas'})
     # print(cursor.next())
