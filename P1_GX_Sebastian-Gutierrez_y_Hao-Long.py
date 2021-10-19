@@ -38,7 +38,7 @@ class ModelCursor:
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
         """
-        if ModelCursor.alive:
+        if self.alive:
             return self.model_class(**self.command_cursor.next())
 
     @property
@@ -464,7 +464,7 @@ if __name__ == '__main__':
     c1.save()
     c1.set(**{'nombre': 'Universidad Politecnica de Madrid'})
     c1.save()
-    cursor2 = Centro.find({'nombre': 'Universidad Politecnica Madrid'})
+    cursor2 = Centro.find({'nombre': 'Universidad Politecnica de Madrid'})
     print(cursor2.next())
 
     e1 = Empresa(**empresa)
