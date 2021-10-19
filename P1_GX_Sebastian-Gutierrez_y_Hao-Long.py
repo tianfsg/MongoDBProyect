@@ -135,6 +135,10 @@ class Persona:
         for x in curr:
             for i in mod:
                 if x == i:
+                    if i == 'ciudad':
+                        self.__dict__['loc'] = getCityGeoJSON(kwargs[i])
+                        self.mod = {'loc': self.__dict__['loc']}
+
                     self.__dict__[x] = kwargs[i]
                     self.mod = {x: kwargs[i]}
                     
@@ -433,12 +437,11 @@ if __name__ == '__main__':
     Empresa.init_class(client['mongoproyect'])
     Centro.init_class(client['mongoproyect'])
 
-    json_db = client['mongoproyect2']
-    collection_persona = json_db['persona']
-    with open('redES.json') as f:
-        file_data = json.load(f)
-    collection_persona.insert_many(file_data)
-
+    # json_db = client['mongoproyect2']
+    # collection_persona = json_db['persona']
+    # with open('redES.json') as f:
+    #     file_data = json.load(f)
+    # collection_persona.insert_many(file_data)
 
 
     """
@@ -455,24 +458,24 @@ if __name__ == '__main__':
 
     p1 = Persona(**persona)
     p1.save()
-    p1.set(**{'telefono': '74837492'})
-    p1.save()
-    cursor = Persona.find({'nombre': 'Sebas'})
-    print(cursor.next())
+    p1.set(**{'ciudad': 'Marseille'})
+    # p1.save()
+    # cursor = Persona.find({'nombre': 'Sebas'})
+    # print(cursor.next())
 
-    c1 = Centro(**centro)
-    c1.save()
-    c1.set(**{'nombre': 'Universidad Politecnica de Madrid'})
-    c1.save()
-    cursor2 = Centro.find({'nombre': 'Universidad Politecnica de Madrid'})
-    print(cursor2.next())
+    # c1 = Centro(**centro)
+    # c1.save()
+    # c1.set(**{'nombre': 'Universidad Politecnica de Madrid'})
+    # c1.save()
+    # cursor2 = Centro.find({'nombre': 'Universidad Politecnica de Madrid'})
+    # print(cursor2.next())
 
-    e1 = Empresa(**empresa)
-    e1.save()
-    e1.set(**{'nombre': 'Universidad de Tecnologia y Arte Digital'})
-    e1.save()
-    cursor3 = Persona.find({'nombre': 'Universidad de Tecnologia y Arte Digital'})
-    print(cursor3.next())
+    # e1 = Empresa(**empresa)
+    # e1.save()
+    # e1.set(**{'nombre': 'Universidad de Tecnologia y Arte Digital'})
+    # e1.save()
+    # cursor3 = Persona.find({'nombre': 'Universidad de Tecnologia y Arte Digital'})
+    # print(cursor3.next())
 
     """
         Pruebas de GeoJSON
@@ -484,28 +487,28 @@ if __name__ == '__main__':
     """
         Aggregate con pipelines
     """
-    A1 = collection_persona.aggregate(Q1)
-    print(list(A1))
+    # A1 = collection_persona.aggregate(Q1)
+    # print(list(A1))
 
-    A2 = collection_persona.aggregate(Q2)
-    print(list(A2))
+    # A2 = collection_persona.aggregate(Q2)
+    # print(list(A2))
 
-    A3 = collection_persona.aggregate(Q3)
-    print(list(A3))
+    # A3 = collection_persona.aggregate(Q3)
+    # print(list(A3))
 
-    A4 = client['mongoproyect'].persona.aggregate(Q4)
-    print(list(A4))
+    # A4 = client['mongoproyect'].persona.aggregate(Q4)
+    # print(list(A4))
 
-    #A5 = collection_persona.aggregate(Q5)
-    #print(list(A5))
-    #for x in json_db.after2017.find():
-    #    print(x)
+    # #A5 = collection_persona.aggregate(Q5)
+    # #print(list(A5))
+    # #for x in json_db.after2017.find():
+    # #    print(x)
 
-    A6 = collection_persona.aggregate(Q6)
-    print(list(A6))
+    # A6 = collection_persona.aggregate(Q6)
+    # print(list(A6))
 
-    A7 = collection_persona.aggregate(Q7)
-    print(list(A7))
+    # A7 = collection_persona.aggregate(Q7)
+    # print(list(A7))
 
 #TODO Arreglar la Q4 y la Q5
     #Q4 tiene problemas de tipo con 2dSphere
