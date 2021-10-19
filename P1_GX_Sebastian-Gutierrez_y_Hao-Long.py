@@ -2,6 +2,8 @@ __author__ = 'Hao_Long_y_Sebastian_Gutierrez'
 
 import pymongo
 import json
+import dateutil
+from dateutil import parser
 from pymongo import MongoClient
 
 def getCityGeoJSON(address):
@@ -38,7 +40,7 @@ class ModelCursor:
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
         """
-        if self.alive:
+        if ModelCursor.alive:
             return self.model_class(**self.command_cursor.next())
 
     @property
@@ -422,7 +424,9 @@ Q1 = [{'$match': {'ciudad':'Huelva'}}]
 Q2 = [{'$match': {'estudios.universidad': {'$in': ['UAM', 'UPM']}}}]
 Q3 = [{'$group': {'_id':"$ciudad"}}]
 Q4 = [{'$geoNear':{'near': {'type':'Point', 'coordinates': [ 40.4167047, -3.7035825 ]}, 'distanceField': 'dist.calculated', 'maxDistance': '700000', 'includeLocs':'dist.locstion', 'spherical': 'true'}}, {'$sort':{'dist.calculated': 1}}, {'$limit': 10}]
-#Q5 = [{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]
+dateStr = "2017-01-01T00:00:00Z"
+myDatetime = dateutil.parser.parse(dateStr)
+Q5 = [{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': "%d/%m/%Y"}}, myDatetime]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}]
 Q6 = [{'$match':{"trabajo.empresa":"UPM"}},{'$group':{'_id':"",'avg_estudios':{'$avg':{'$size': "$estudios"}}}}]
 Q7 = [{'$unwind':"$estudios"}, {'$group':{'_id':"$estudios.universidad", 'count': {'$sum': 1}}}, {'$sort':{'count': -1}}, {'$limit': 3}]
 
@@ -496,10 +500,10 @@ if __name__ == '__main__':
     A4 = client['mongoproyect'].persona.aggregate(Q4)
     print(list(A4))
 
-    #A5 = collection_persona.aggregate(Q5)
-    #print(list(A5))
-    #for x in json_db.after2017.find():
-    #    print(x)
+    A5 = collection_persona.aggregate(Q5)
+    print(list(A5))
+    for x in json_db.after2017.find():
+        print(x)
 
     A6 = collection_persona.aggregate(Q6)
     print(list(A6))
