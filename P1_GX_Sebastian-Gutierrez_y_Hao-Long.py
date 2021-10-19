@@ -510,4 +510,5 @@ if __name__ == '__main__':
     #Q4 tiene problemas de tipo con 2dSphere
     #Q5 no pasa bien los '%' del formato de las fechas
 #TODO Arreglar ModelCursor, el next ha dejado de funcionar
+#TODO Que se actualize 'loc' en el SET
 #TODO debug final
