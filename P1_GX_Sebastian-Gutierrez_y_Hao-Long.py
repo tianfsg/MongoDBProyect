@@ -505,8 +505,9 @@ if __name__ == '__main__':
     
     # ubi = getCityGeoJSON('Madrid')
     # print(ubi)
+
 #TODO Arreglar la Q4 y la Q5
-    #Q4 tiene problemas de tipo
+    #Q4 tiene problemas de tipo con 2dSphere
     #Q5 no pasa bien los '%' del formato de las fechas
 #TODO Arreglar ModelCursor, el next ha dejado de funcionar
 #TODO debug final
