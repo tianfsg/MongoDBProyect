@@ -511,9 +511,7 @@ if __name__ == '__main__':
     A7 = collection_persona.aggregate(Q7)
     print(list(A7))
 
-#TODO Arreglar la Q4 y la Q5
-    #Q4 tiene problemas de tipo con 2dSphere
-    #Q5 no pasa bien los '%' del formato de las fechas
-#TODO Arreglar ModelCursor, el next ha dejado de funcionar
+#TODO Comprobar si funcionan las queries cambiadas
+#TODO Arreglar ModelCursor, el alive ha dejado de funcionar
 #TODO Que se actualize 'loc' en el SET
 #TODO debug final
