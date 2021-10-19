@@ -2,7 +2,6 @@ __author__ = 'Hao_Long_y_Sebastian_Gutierrez'
 
 import pymongo
 import json
-import datetime
 from pymongo import MongoClient
 
 def getCityGeoJSON(address):
@@ -440,31 +439,7 @@ if __name__ == '__main__':
         file_data = json.load(f)
     collection_persona.insert_many(file_data)
 
-    """
-        Aggregate con pipelines
-    """
-    A1 = collection_persona.aggregate(Q1)
-    print(list(A1))
 
-    A2 = collection_persona.aggregate(Q2)
-    print(list(A2))
-
-    A3 = collection_persona.aggregate(Q3)
-    print(list(A3))
-
-    #A4 = collection_persona.aggregate(Q4)
-    #print(list(A4))
-
-    #A5 = collection_persona.aggregate([{'$unwind':"$estudios"}, {'$match':{'$expr':{'$gte':[{'$dateFromString':{'dateString': "$estudios.final", 'format': '%d/%m/%Y'}}, 'ISODate'("2017-01-01T00:00:00Z")]}}},{'$group':{'_id': "$_id", 'nombre':{'$first': "$nombre.nombre"}, 'apellido':{'$first': "$nombre.apellido"}, 'fechaFinal':{'$first':"$estudios.final"}}},{'$out': {'db': "mongoproyect2", 'coll': "after2017"}}])
-    #print(list(A5))
-    #for x in json_db.after2017.find():
-    #    print(x)
-
-    A6 = collection_persona.aggregate(Q6)
-    print(list(A6))
-
-    A7 = collection_persona.aggregate(Q7)
-    print(list(A7))
 
     """
         Pruebas de funcionamieto de Modelo() 
@@ -505,6 +480,32 @@ if __name__ == '__main__':
     
     # ubi = getCityGeoJSON('Madrid')
     # print(ubi)
+
+    """
+        Aggregate con pipelines
+    """
+    A1 = collection_persona.aggregate(Q1)
+    print(list(A1))
+
+    A2 = collection_persona.aggregate(Q2)
+    print(list(A2))
+
+    A3 = collection_persona.aggregate(Q3)
+    print(list(A3))
+
+    A4 = client['mongoproyect'].persona.aggregate(Q4)
+    print(list(A4))
+
+    #A5 = collection_persona.aggregate(Q5)
+    #print(list(A5))
+    #for x in json_db.after2017.find():
+    #    print(x)
+
+    A6 = collection_persona.aggregate(Q6)
+    print(list(A6))
+
+    A7 = collection_persona.aggregate(Q7)
+    print(list(A7))
 
 #TODO Arreglar la Q4 y la Q5
     #Q4 tiene problemas de tipo con 2dSphere
