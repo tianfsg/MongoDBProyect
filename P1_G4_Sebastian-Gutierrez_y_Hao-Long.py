@@ -38,18 +38,16 @@ class ModelCursor:
     def next(self):
         """ Devuelve el siguiente documento en forma de modelo
         """
-        if ModelCursor.alive:
-            return self.model_class(**self.command_cursor.next())
-
+        try:
+            if ModelCursor.alive:
+                return self.model_class(**self.command_cursor.next())
+        except:
+            print("Error cursor next")
     @property
     def alive(self):
         """True si existen más modelos por devolver, False en caso contrario
         """
-        try:
-            self.command_cursor.next()
-            return True
-        except:
-            return False
+        return self.command_cursor.alive
 
 class Persona:
     """ Prototipo de la clase modelo
